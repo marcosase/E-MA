@@ -54,12 +54,12 @@ def indexes(input_array,axis_x, thres = 0.3, error_fit = 0.5, deltaMin_nm = 1.0)
         '''Min value of distinction between curves '''
         min_dist = set_min_dist(x, delta_nm = deltaMin_nm) #Samples
         
-        print('Indexes - Peaks:',peaks)
+        #print('Indexes - Peaks:',peaks)
         ''' '''
         if peaks.size > 1 and min_dist > 1:
             ''' Filter peaks according to minimum distance between them '''
             majors = filterPeaks(y, peaks, min_dist)
-            print('filterPeaks - majors: ', x[majors])
+            #print('filterPeaks - majors: ', x[majors])
             ''' Calculating the center of lorentzian '''
             if majors.size > 1:
                 center_right= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
@@ -72,7 +72,7 @@ def indexes(input_array,axis_x, thres = 0.3, error_fit = 0.5, deltaMin_nm = 1.0)
                 #center_right= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
                 #center_left = 688.213 
             '''
-            print('Majors peaks:',center_right,center_left )
+            #print('Majors peaks:',center_right,center_left )
             if center_left is not None or center_right is not None:
                 center_left = np.round_(a = center_left, decimals = 2) #nm
                 center_right = np.round_(a = center_right, decimals = 2) #n 
@@ -209,8 +209,8 @@ def lorentzian_fit(x, y,peak, error = 0.10,range_sample = 10):
         params, pcov = optimize.curve_fit(lorentzian, x_compact, y_compact,initial)
         if (params is not None) and (pcov is not None):
             perr = np.sqrt(np.diag(pcov))
-            print('Error:', np.sum(perr))
-            print('Params :',params)
+            #print('Error:', np.sum(perr))
+            #print('Params :',params)
             if np.sum(perr) < error:
                 return float(params[1])
             else:
