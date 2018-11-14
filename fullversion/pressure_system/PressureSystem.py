@@ -263,7 +263,7 @@ class PressureSystem(object):
             ''' When we have LakeShore '''
             temp = self.ui.lblTemp.text() #LakeSHore
             #temp = self.temp # with no lakeshore
-            self.ui.lblTemp.setText(self.temp) #LakeShore
+            #self.ui.lblTemp.setText(self.temp) #with no LakeShore
             t = float(temp)
             print('Temperature: ',t)
             if t > 0.01:
