@@ -239,6 +239,7 @@ class PressureSystem(object):
         ''' wl[0] is the wavelength with biggest value of intensity. wl[0] is rightmost -> 2nd peak'''
         ''' wl[1] is leftmost -> 1st peak'''
         try:
+            print('GetTemp4auto', self.getTemp4auto())
             if wl is not None: #wl[0] is not -1
                 if len(wl) == 2:
                     if (self.graphdata.pressureCalculate(temp = self.getTemp4auto(), peak1 = wl[1], peak2 = wl[0])):
