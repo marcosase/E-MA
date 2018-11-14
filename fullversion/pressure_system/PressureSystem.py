@@ -192,8 +192,8 @@ class PressureSystem(object):
                 self.SensorOcean.editIntegrationTime(timeValue = self.ui.edtIntegration.value())
             elif(btn_int == 1): #Acquiring is happening
                 self.ui.btnAcquire.setText('Start') #Initial mode
-                #self.SensorOcean.ocean.pvAcMode.put("Single")
-                self.SensorOcean.ocean.pvStart.put(value = 0)
+                self.SensorOcean.ocean.pvAcMode.put("Single")
+                #self.SensorOcean.ocean.pvStart.put(value = 0)
                 self.searchPeaks_single()
                 self.ui.cmbAcquisition.setEnabled(True)
                 self.ui.edtIntegration.setEnabled(True)
