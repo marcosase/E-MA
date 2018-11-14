@@ -242,7 +242,8 @@ class PressureSystem(object):
             if wl is not None: #wl[0] is not -1
                 if len(wl) == 2:
                     if (self.graphdata.pressureCalculate(temp = self.getTemp4auto(), peak1 = wl[1], peak2 = wl[0])):
-                        self.displayONlcd(self.graphdata.press2) #self.ui.lcdPressure.display(self.graphdata.press2)  
+                        self.displayONlcd(self.graphdata.press2) #self.ui.lcdPressure.display(self.graphdata.press2) 
+                        return True 
                     else:
                         return False
                 elif (len(wl) == 1) and (wl[0] == -1):
@@ -261,8 +262,9 @@ class PressureSystem(object):
             ''' When we have LakeShore '''
             temp = self.ui.lblTemp.text() #LakeSHore
             #temp = self.temp # with no lakeshore
-            #self.ui.lblTemp.setText(self.temp) #LakeShore
+            self.ui.lblTemp.setText(self.temp) #LakeShore
             t = float(temp)
+            print('Temperature: ',t)
             if t > 0.01:
                 return t
             else:
@@ -442,7 +444,8 @@ class PressureSystem(object):
         ''' Set initial values of pressure calculation '''
         try:
             if (self.ui.chkAuto.isChecked()) and (self.wavelength is not None):
-                temp0 = self.ui.LineEdit_tempBase_2.text()
+                #temp0 = self.ui.LineEdit_tempBase_2.text()
+                temp0 = self.ui.LineEdit_tempBase.text()
                 position10 = self.wavelength[1]
                 position20 = self.wavelength[0]
                 dataFlag = self.data.standard(tempzero = temp0, peak1zero = position10, peak2zero = position20)
@@ -450,6 +453,7 @@ class PressureSystem(object):
                 if dataFlag and datagraphFlag:
                     self.ui.LineEdit_1nm_2.setText(str(position10))
                     self.ui.LineEdit_2nm_2.setText(str(position20))
+                    self.ui.LineEdit_tempBase_2.text(temp0)
                 else:
                     self.showDialog('Fatal Error on initial value settings','Fatal Error on initial value settings')
             else:
