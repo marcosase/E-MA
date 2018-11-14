@@ -177,8 +177,10 @@ class PressureSystem(object):
     def managerUserInterfaceforacquisition(self):
         ''' user interface flow control '''
         try:
-            btn_str = self.ui.btnAcquire.text()
-            if(btn_str == 'Start'):
+            btn_str = self.ui.btnAcquire.text() #Get text of start button
+            btn_int = self.SensorOcean.ocean.pvStart.get()
+            print('btn_int', btn_int)
+            if(btn_str == 'Start'): #If 'button' é start
                 cmd_str = self.SensorOcean.ocean.pvAcMode.get()
                 if (cmd_str == 0): 
                     self.searchPeaks_single()
@@ -239,7 +241,7 @@ class PressureSystem(object):
         ''' wl[0] is the wavelength with biggest value of intensity. wl[0] is rightmost -> 2nd peak'''
         ''' wl[1] is leftmost -> 1st peak'''
         try:
-            print('GetTemp4auto', self.getTemp4auto())
+            #print('GetTemp4auto', self.getTemp4auto())
             if wl is not None: #wl[0] is not -1
                 if len(wl) == 2:
                     if (self.graphdata.pressureCalculate(temp = self.getTemp4auto(), peak1 = wl[1], peak2 = wl[0])):
@@ -265,7 +267,7 @@ class PressureSystem(object):
             #temp = self.temp # with no lakeshore
             #self.ui.lblTemp.setText(self.temp) #with no LakeShore
             t = float(temp)
-            print('Temperature: ',t)
+            #print('Temperature: ',t)
             if t > 0.01:
                 return t
             else:
