@@ -177,10 +177,10 @@ class PressureSystem(object):
     def managerUserInterfaceforacquisition(self):
         ''' user interface flow control '''
         try:
-            btn_str = self.ui.btnAcquire.text() #Get text of start button
-            btn_int = self.SensorOcean.ocean.pvStart.get()
-            print('btn_int', btn_int)
-            if(btn_str == 'Start'): #If 'button' é start
+            #btn_str = self.ui.btnAcquire.text() #Get text of start button
+            btn_int = self.SensorOcean.ocean.pvStart.get() #We changed btn_st per btn_int
+        
+            if(btn_int == 0): #Acquiring is not happening
                 cmd_str = self.SensorOcean.ocean.pvAcMode.get()
                 if (cmd_str == 0): 
                     self.searchPeaks_single()
@@ -190,7 +190,7 @@ class PressureSystem(object):
                     self.ui.cmbAcquisition.setEnabled(False)
                     self.ui.edtIntegration.setEnabled(False)
                 self.SensorOcean.editIntegrationTime(timeValue = self.ui.edtIntegration.value())
-            elif(btn_str == 'Stop'):
+            elif(btn_int == 1): #Acquiring is happening
                 self.ui.btnAcquire.setText('Start') #Initial mode
                 self.SensorOcean.ocean.pvAcMode.put("Single")
                 self.searchPeaks_single()
