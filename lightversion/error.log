@@ -1,0 +1,14 @@
+--------------------------------------------------------------------------------
+2018-11-14, 12:41:03
+--------------------------------------------------------------------------------
+<class 'AttributeError'>: 
+'PressureSystem' object has no attribute 'showDialog'
+--------------------------------------------------------------------------------
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/lightversion/pressure_system/PressureSystemLight.py", line 212, in plotRealTimeLineDesired
+    self.plotCalcPosition(float(peak2))
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/lightversion/pressure_system/PressureSystemLight.py", line 220, in plotCalcPosition
+    self.plotLine_nm_OnGraph(w_l = wl_,_label='SetPoint',plot=self.plotFlagDesired, _angle = 90)
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/lightversion/pressure_system/PressureSystemLight.py", line 247, in plotLine_nm_OnGraph
+    self.showDialog("Error on pressure data processing","Mode Automatic: Error on pressure data plotting")
+--------------------------------------------------------------------------------
+Dioptas Version: 0.4.1
