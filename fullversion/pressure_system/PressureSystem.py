@@ -220,7 +220,7 @@ class PressureSystem(object):
         Callback of OceanSpectrometer: Every time that there is a new data, this function will work
         '''
         if(self.pressureGraphDataCalculation(wl)): #If wavelength makes sense
-            if (self.ui.chkAuto.isChecked()): #The user wants to search peaks automatically
+            if (self.ui.chkAuto.isChecked()): #The user wants to PLOT/search peaks automatically
                 if self.SensorOcean.ocean.pvAcMode.get() == 1: #Real time is happening
                     self.setRealPressure(flag=True, gpa_real= self.graphdata.press2)#Motion! Go!
                 else:
@@ -236,8 +236,31 @@ class PressureSystem(object):
             self.ui.lcdPressure.display('--') 
             self.plotAutomaticLineOnGraph(plot=False) #Stop plotting
 
-    
     def pressureGraphDataCalculation(self,wl):
+        ''' 1st peak is the leftmost peak. 2nd peak is the rightmost '''
+        ''' wl[0] is the wavelength with biggest value of intensity. wl[0] is rightmost -> 2nd peak'''
+        ''' wl[1] is leftmost -> 1st peak'''
+        try:
+            
+            if wl is not None: 
+                self.ui.label_centerswaves.setText(str(wl[1]) + '  ' + str(wl[0]))
+                if (wl[0] == -1) or (wl[1] == -1):
+                    return False
+                else:
+                    if (self.graphdata.pressureCalculate(temp = self.getTemp4auto(), peak1 = wl[1], peak2 = wl[0])):
+                        self.displayONlcd(self.graphdata.press2) #self.ui.lcdPressure.display(self.graphdata.press2) 
+                        return True 
+                    else:
+                        return False
+            else:
+                self.ui.label_centerswaves.setText('None')
+                return False
+        except OSError as err:
+            self.showDialog("Error on pressure GraphData Calculation",err)
+            return False
+    
+    
+    def pressureGraphDataCalculation_fake(self,wl):
         ''' 1st peak is the leftmost peak. 2nd peak is the rightmost '''
         ''' wl[0] is the wavelength with biggest value of intensity. wl[0] is rightmost -> 2nd peak'''
         ''' wl[1] is leftmost -> 1st peak'''

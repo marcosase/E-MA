@@ -346,7 +346,7 @@ class Ui_MainWindow(object):
 "        The channel to be used by the widget.\n"
 "\n"
 "    "))
-        self.PyDMCheckbox_visionsystem.setText(_translate("MainWindow", "Diffraction imaging system"))
+        self.PyDMCheckbox_visionsystem.setText(_translate("MainWindow", "Diffraction Imaging System"))
         self.PyDMPushButton_visionsystem.setWhatsThis(_translate("MainWindow", "\n"
 "    Basic PushButton to send a fixed value.\n"
 "\n"

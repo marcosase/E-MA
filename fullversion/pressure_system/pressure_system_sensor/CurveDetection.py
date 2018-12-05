@@ -37,7 +37,7 @@ def indexes(input_array,axis_x, thres = 0.3, error_fit = 0.5, deltaMin_nm = 1.0)
         Array containing the indexes of the peaks that were detected
     '''
     try:
-        range = np.where((axis_x > 691) & (axis_x < 720)) #Range between 0 Gpa and 100 Gpa aprox
+        range = np.where((axis_x > 689) & (axis_x < 720)) #Range between 0 Gpa and 80 Gpa aprox
         
         ''' Normalizing input array '''
         y = normalizeY(input_array[range])
@@ -59,30 +59,40 @@ def indexes(input_array,axis_x, thres = 0.3, error_fit = 0.5, deltaMin_nm = 1.0)
         if peaks.size > 1 and min_dist > 1:
             ''' Filter peaks according to minimum distance between them '''
             majors = filterPeaks(y, peaks, min_dist)
-            #print('filterPeaks - majors: ', x[majors])
+            
             ''' Calculating the center of lorentzian '''
             if majors.size > 1:
                 center_right= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
                 center_left = lorentzian_fit(x,y,majors[1], error = error_fit,range_sample = min_dist)   
-            else:
-                return None
-            '''   
+                
+                ''' Are centers float or int numbers ?'''
+                if center_left is not None or center_right is not None:
+                    center_left = np.round_(a = center_left, decimals = 2) #nm
+                    center_right = np.round_(a = center_right, decimals = 2) #nm
+                    
+                    'Rightmost peak is bigger than leftmost peak (nm) and their relative distance is smaller than 4 nm, for example'
+                    if ((center_right > center_left) and (center_right - center_left) < 4*deltaMin_nm): #(wl[0] > wl[1]) and (wl[0] - wl[1] < 120.5): #rightmost peak should greater than leftmost
+                        return np.array([center_right,center_left])
+                    else: 
+                        return None
+                    
+                else:
+                    return None
+               
             elif majors.size == 1:
-                return False
-                #center_right= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
-                #center_left = 688.213 
-            '''
-            #print('Majors peaks:',center_right,center_left )
-            if center_left is not None or center_right is not None:
-                center_left = np.round_(a = center_left, decimals = 2) #nm
-                center_right = np.round_(a = center_right, decimals = 2) #n 
+                center_right= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
+                
+                ''' Are centers float or int numbers ?'''
+                if center_right is not None:
+                    center_right = np.round_(a = center_right, decimals = 2) #nm
+                    return np.array([center_right,-1])
+                else:
+                    return None
+                
             else:
+                'If there no peak'
                 return None
             
-            if ((center_right > center_left) and (center_right - center_left) < 4*deltaMin_nm): #(wl[0] > wl[1]) and (wl[0] - wl[1] < 120.5): #rightmost peak should greater than leftmost
-                return np.array([center_right,center_left])
-            else: 
-                return None
     except:
         return None
 

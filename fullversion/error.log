@@ -1,0 +1,14 @@
+--------------------------------------------------------------------------------
+2018-12-05, 08:57:38
+--------------------------------------------------------------------------------
+<class 'AttributeError'>: 
+'SensorOcean' object has no attribute 'timeValue'
+--------------------------------------------------------------------------------
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/pressure_system/PressureSystem.py", line 742, in acqMult
+    if (self.SensorOcean.saveData(pathComp,peak1zero=self.graphdata._peak1zero,peak2zero=self.graphdata._peak2zero,temp=self.graphdata._tempzero)):
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/pressure_system/pressure_system_sensor/SensorOcean.py", line 131, in saveData
+    fmt="%f\t%f", header = self.headerData(peak1zero,peak2zero,temp))
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/pressure_system/pressure_system_sensor/SensorOcean.py", line 144, in headerData
+    itime = '\n Integration time (s): ' + str(self.timeValue)
+--------------------------------------------------------------------------------
+Dioptas Version: 0.4.1
