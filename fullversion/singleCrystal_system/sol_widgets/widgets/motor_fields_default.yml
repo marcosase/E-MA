@@ -1,0 +1,42 @@
+NAME : .NAME
+DESC : .DESC
+STOP : .STOP
+RLV  : .RLV
+VAL  : .VAL
+RBV  : .RBV
+SET  : .SET
+LLM  : .LLM
+HLM  : .HLM
+MOVN : .MOVN
+LVIO : .LVIO
+ATHM : .ATHM
+LLS  : .LLS
+HLS  : .HLS
+
+DHLM : .DHLM
+DLLM : .DLLM
+
+VMAX : .VMAX
+VELO : .VELO
+BVEL : .BVEL
+SMAX : .SMAX
+S    : .S
+SBAK : .SBAK
+ACCL : .ACCL
+BACC : .BACC
+BDST : .BDST
+FRAC : .FRAC
+
+ERES : .ERES
+RRES : .RRES
+UEIP : .UEIP
+URIP : .URIP
+
+DIR  : .DIR
+OFF  : .OFF
+
+MOVN_TOOLTIP : Motor is moving
+LVIO_TOOLTIP : Limit violation
+ATHM_TOOLTIP : At home
+LLS_TOOLTIP  : At low limit switch
+HLS_TOOLTIP  : At high limit switch

@@ -86,8 +86,6 @@ class SensorOcean(QThread):
               char_value=None, **kws):
         try:
             if (char_value is not None) and (float(char_value) >= 100):
-               
-                start = time.time()
                 ''' Defining which data is X or Y '''
                 ydata = self.getYdata()       
                 xdata = self.getXdata()
@@ -101,8 +99,6 @@ class SensorOcean(QThread):
                 else:
                     self.signal.emit(np.array([-1,-1]))
             
-                stop = time.time()
-                print('Time exec: ',(stop-start))
         except OSError as err:
             self.error_message.emit("Fatal exception error! Close E-MA application! ->"
                                 + str(err))        
@@ -140,6 +136,7 @@ class SensorOcean(QThread):
             self.error_message.emit("Average file not saved. Error saving file: "
                                 + str(err))
             return False
+        
     def headerData(self,peak1 = 692.80,peak2 = 694.26,temp = 300.00):
         itime = '\n Integration time (s): ' + str(self.timeValue)
         peaks1 = '\nPeak1 (nm): ' + str(peak1)

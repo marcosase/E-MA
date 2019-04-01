@@ -72,10 +72,14 @@ class ui_marccd(object):
             self.display_msg(msg.NotSaved)
         else:
             self.display_msg(msg.Finished)
-        
+    
+    def _printAA(self):
+        print('Opa deu bom!')
+    
     def _imagesequence(self):  
         if not (self.connected):
             self.display_msg(msg.NotReady)
+            return False #SingleCrystal
         else:
             paramssaved = self.getting_imgsequece_params()
             if paramssaved:
@@ -91,7 +95,11 @@ class ui_marccd(object):
                     self.timeleft.terminate()
                 else:
                     self.timeleft.args(target_time = self.exposure)
-                    self.timeleft.start()              
+                    self.timeleft.start()    
+                
+                return True #SingleCrystal
+            else:
+                return False #SingleCrystal          
     
     def imagenumbercapture(self,numOfImages):
         self.msg_label = str(numOfImages) + ' of ' + str(self.count) + ' images were captured...'

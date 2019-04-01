@@ -18,9 +18,12 @@ class EmaApp (object):
         
         ''' EditPVNames on screen'''
         self.setEditPVnames()
-        
+            
         ''' Pressure System '''
         self.setOceanApp()
+        
+        ''' Single Crystal System '''
+        self.setSingleCrystalApp()
         
         ''' Set rules '''
         self.__setFlowControl() 
@@ -43,6 +46,51 @@ class EmaApp (object):
         self.ui_ocean.setupUi(self.Ui_MainWindow_Ocean)
         self.ui_ocean.setFlowControl(oceanPV = self.pvname_ocean, motorPV = self.pvname_motorGearBox, LS = self.pvname_lakeshore)
 
+    def setSingleCrystalApp(self):
+        ''' Single Crystal System Interface: Settings '''
+        from singleCrystal_system.SingleCrystalSystem import SingleCrystalSystem
+        self.Ui_MainWindow_SingleCrystal = QtWidgets.QMainWindow()
+        self.ui_singlecrystal = SingleCrystalSystem()
+        self.ui_singlecrystal.setupUi(self.Ui_MainWindow_SingleCrystal)
+        self.ui_singlecrystal.setFlowControl()
+        self.ui_singlecrystal.motorfinished.connect(self.singleCrystal_MarccdEventControl)
+        ui_Dioptas.ui_marccd.marccd.signal.connect(self.dioptasFinishedTask)
+        ui_Dioptas.ui_marccd.timeleft.timeleft.connect(self.blinkLed)
+        self.ui_marccdEnable = False
+    
+    def blinkLed(self):
+        self.ui_singlecrystal.ui.PyDMByteIndicator_integrated.channelValueChanged(True)
+        
+    
+    def singleCrystal_MotorEventControl(self):
+        if self.ui_marccdEnable and self.ui_singlecrystal.ui.checkBox_enableMarccd.isChecked():
+            self.ui_singlecrystal.ui.PyDMByteIndicator_integrated._on_color = 1
+            self.ui_singlecrystal.move()
+        else:
+            self.ui_singlecrystal.ui.PyDMByteIndicator_integrated._on_color = 0 #channelValueChanged(False)
+    
+    def singleCrystal_MarccdEventControl(self):
+        if self.ui_singlecrystal.ui.checkBox_enableMarccd.isChecked():
+            self.dioptasTakePicturesPlease()
+    
+    def printA(self):
+        print('aaa')
+    
+    def dioptasTakePicturesPlease(self): 
+        flag  = ui_Dioptas.ui_marccd._imagesequence()
+        if ( flag is not None):
+            self.ui_marccdEnable = flag
+        else:
+            self.ui_marccdEnable = False
+    
+    def dioptasFinishedTask(self,imagesaved):
+        if imagesaved:
+            self.ui_marccdEnable = True
+            self.ui_singlecrystal.ui.PyDMCheckbox_msg.setText('A new image was saved! :) ')
+            self.singleCrystal_MotorEventControl()
+        else:
+            self.ui_marccdEnable = False
+            self.ui_singlecrystal.ui.PyDMCheckbox_msg.setText('Error: image was not saved! :/')
         
     def setEditPVnames(self):
         ''' Edit PVnames of each system: Settings '''
@@ -59,6 +107,8 @@ class EmaApp (object):
         self.ui_MW.PyDMPushButton_visionsystem.clicked.connect(self.__openDioptas)
         self.ui_MW.PyDMPushButton_ligthsystem.clicked.connect(self.__openLightSource)
         self.ui_MW.PyDMPushButton_pressuresystem.clicked.connect(self.__openPressureSystem)
+        
+        self.ui_MW.PyDMPushButton_singlecrystal.clicked.connect(self.__openSingleCrystalSystem)
         self.ui_MW.toolButton.clicked.connect(self.__openEditPVnames)
         
         
@@ -68,6 +118,14 @@ class EmaApp (object):
     def __openEditPVnames(self):
         ''' Edit PVnames of each system: Displaying '''
         self.Ui_MainWindow_editPVnames.show()
+    
+    def __openSingleCrystalSystem(self):
+        if(self.ui_MW.PyDMCheckbox_singlecrystal.isChecked()):
+            self.showDialog( title = 'Attention', text = 'You must set Diffraction Imaging System before starting it. ')
+            app.establish_widget_connections(widget = self.Ui_MainWindow_SingleCrystal)
+            self.Ui_MainWindow_SingleCrystal.show()
+        else:
+            self.showDialog(title = 'Box of Single Crystal System: Not Checked', text = 'Box of Single Crystal System: Not Checked')
         
     def __openPressureSystem(self):
         ''' PressureSystem displaying '''

@@ -38,16 +38,16 @@ class Ui_MainWindow(object):
         self.PyDMImageView_inicial.setProperty("colorMap", PyDMImageView.Monochrome)
         self.PyDMImageView_inicial.setObjectName("PyDMImageView_inicial")
         self.gridLayout.addWidget(self.PyDMImageView_inicial, 2, 0, 1, 2)
-        self.PyDMCheckbox_spectrogramsystem = PyDMCheckbox(self.centralwidget)
-        self.PyDMCheckbox_spectrogramsystem.setToolTip("")
-        self.PyDMCheckbox_spectrogramsystem.setStyleSheet("color: rgb(240, 240, 240);")
-        self.PyDMCheckbox_spectrogramsystem.setObjectName("PyDMCheckbox_spectrogramsystem")
-        self.gridLayout.addWidget(self.PyDMCheckbox_spectrogramsystem, 8, 0, 1, 1)
-        self.PyDMPushButton_spectrogramsystem = PyDMPushButton(self.centralwidget)
-        self.PyDMPushButton_spectrogramsystem.setToolTip("")
-        self.PyDMPushButton_spectrogramsystem.setStyleSheet("color: rgb(255, 255, 255);")
-        self.PyDMPushButton_spectrogramsystem.setObjectName("PyDMPushButton_spectrogramsystem")
-        self.gridLayout.addWidget(self.PyDMPushButton_spectrogramsystem, 8, 1, 1, 1)
+        self.PyDMCheckbox_singlecrystal = PyDMCheckbox(self.centralwidget)
+        self.PyDMCheckbox_singlecrystal.setToolTip("")
+        self.PyDMCheckbox_singlecrystal.setStyleSheet("color: rgb(240, 240, 240);")
+        self.PyDMCheckbox_singlecrystal.setObjectName("PyDMCheckbox_singlecrystal")
+        self.gridLayout.addWidget(self.PyDMCheckbox_singlecrystal, 8, 0, 1, 1)
+        self.PyDMPushButton_singlecrystal = PyDMPushButton(self.centralwidget)
+        self.PyDMPushButton_singlecrystal.setToolTip("")
+        self.PyDMPushButton_singlecrystal.setStyleSheet("color: rgb(255, 255, 255);")
+        self.PyDMPushButton_singlecrystal.setObjectName("PyDMPushButton_singlecrystal")
+        self.gridLayout.addWidget(self.PyDMPushButton_singlecrystal, 8, 1, 1, 1)
         self.PyDMCheckbox_lightsource = PyDMCheckbox(self.centralwidget)
         self.PyDMCheckbox_lightsource.setToolTip("")
         self.PyDMCheckbox_lightsource.setStyleSheet("color: rgb(240, 240, 240);")
@@ -103,12 +103,12 @@ class Ui_MainWindow(object):
         self.PyDMPushButton_beamsystem.raise_()
         self.PyDMPushButton_ligthsystem.raise_()
         self.PyDMImageView_inicial.raise_()
-        self.PyDMPushButton_spectrogramsystem.raise_()
+        self.PyDMPushButton_singlecrystal.raise_()
         self.PyDMPushButton_temperaturesystem.raise_()
         self.PyDMCheckbox_beamalignment.raise_()
         self.PyDMCheckbox_lightsource.raise_()
         self.PyDMCheckbox_pressure.raise_()
-        self.PyDMCheckbox_spectrogramsystem.raise_()
+        self.PyDMCheckbox_singlecrystal.raise_()
         self.PyDMCheckbox_temperature.raise_()
         self.PyDMCheckbox_visionsystem.raise_()
         self.toolButton.raise_()
@@ -176,7 +176,7 @@ class Ui_MainWindow(object):
 "        The channel to be used by the widget to receive the image width\n"
 "        information\n"
 "    "))
-        self.PyDMCheckbox_spectrogramsystem.setWhatsThis(_translate("MainWindow", "\n"
+        self.PyDMCheckbox_singlecrystal.setWhatsThis(_translate("MainWindow", "\n"
 "    A QCheckbox with support for Channels and more from PyDM\n"
 "\n"
 "    Parameters\n"
@@ -187,8 +187,8 @@ class Ui_MainWindow(object):
 "        The channel to be used by the widget.\n"
 "\n"
 "    "))
-        self.PyDMCheckbox_spectrogramsystem.setText(_translate("MainWindow", "Spectrogram System"))
-        self.PyDMPushButton_spectrogramsystem.setWhatsThis(_translate("MainWindow", "\n"
+        self.PyDMCheckbox_singlecrystal.setText(_translate("MainWindow", "Single Crystal System"))
+        self.PyDMPushButton_singlecrystal.setWhatsThis(_translate("MainWindow", "\n"
 "    Basic PushButton to send a fixed value.\n"
 "\n"
 "    The PyDMPushButton is meant to hold a specific value, and send that value\n"
@@ -224,7 +224,7 @@ class Ui_MainWindow(object):
 "        ID of channel to manipulate\n"
 "\n"
 "    "))
-        self.PyDMPushButton_spectrogramsystem.setText(_translate("MainWindow", "Open"))
+        self.PyDMPushButton_singlecrystal.setText(_translate("MainWindow", "Open"))
         self.PyDMCheckbox_lightsource.setWhatsThis(_translate("MainWindow", "\n"
 "    A QCheckbox with support for Channels and more from PyDM\n"
 "\n"

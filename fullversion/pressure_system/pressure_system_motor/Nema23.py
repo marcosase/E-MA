@@ -134,7 +134,7 @@ class Nema23(QThread):
             print ("Error %s" % str(e))
             return False
         
-    def settings_motion(self,desired_dir = 0,time_accl = 0.01,desired_rps = 1.0,gearbox_reduce = 1, efficiency_ = 1,revs_onM4 = 0.1):
+    def settings_motion(self,desired_dir = 0,time_accl = 2,desired_rps = 1.0,gearbox_reduce = 1, efficiency_ = 1,revs_onM4 = 0.1):
         #SREV -> VDE SMAX -> VDE BVEL -> VDE
         try:
             delay = self.motorNema.motor.get('DLY')

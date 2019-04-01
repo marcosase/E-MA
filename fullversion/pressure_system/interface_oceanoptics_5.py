@@ -302,6 +302,16 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.page)
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setObjectName("gridLayout_2")
+        self.label_3 = QtWidgets.QLabel(self.page)
+        self.label_3.setMinimumSize(QtCore.QSize(0, 20))
+        self.label_3.setMaximumSize(QtCore.QSize(16777215, 20))
+        font = QtGui.QFont()
+        font.setUnderline(True)
+        self.label_3.setFont(font)
+        self.label_3.setAutoFillBackground(False)
+        self.label_3.setStyleSheet("")
+        self.label_3.setObjectName("label_3")
+        self.gridLayout_2.addWidget(self.label_3, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
         self.lblAcquiring = PyDMLabel(self.page)
         self.lblAcquiring.setMinimumSize(QtCore.QSize(80, 20))
         self.lblAcquiring.setMaximumSize(QtCore.QSize(80, 20))
@@ -319,16 +329,22 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.label_2.setStyleSheet("")
         self.label_2.setObjectName("label_2")
         self.gridLayout_2.addWidget(self.label_2, 0, 2, 1, 2, QtCore.Qt.AlignHCenter)
-        self.btnAcquire = PyDMPushButton(self.page)
-        self.btnAcquire.setEnabled(True)
-        self.btnAcquire.setToolTip("")
-        self.btnAcquire.setWhatsThis("")
-        self.btnAcquire.setStyleSheet("color: rgb(255, 69, 0);\n"
-"background-color: rgb(60, 60, 60);\n"
-"")
-        self.btnAcquire.setProperty("channel", "")
-        self.btnAcquire.setObjectName("btnAcquire")
-        self.gridLayout_2.addWidget(self.btnAcquire, 3, 3, 1, 1)
+        self.lblTemp = PyDMLabel(self.page)
+        self.lblTemp.setToolTip("")
+        self.lblTemp.setWhatsThis("")
+        self.lblTemp.setProperty("precisionFromPV", False)
+        self.lblTemp.setProperty("precision", 2)
+        self.lblTemp.setObjectName("lblTemp")
+        self.gridLayout_2.addWidget(self.lblTemp, 0, 4, 1, 1, QtCore.Qt.AlignHCenter)
+        self.label_6 = QtWidgets.QLabel(self.page)
+        self.label_6.setMinimumSize(QtCore.QSize(0, 20))
+        self.label_6.setMaximumSize(QtCore.QSize(16777215, 20))
+        font = QtGui.QFont()
+        font.setUnderline(True)
+        self.label_6.setFont(font)
+        self.label_6.setStyleSheet("")
+        self.label_6.setObjectName("label_6")
+        self.gridLayout_2.addWidget(self.label_6, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
         self.lblProgress = PyDMLabel(self.page)
         self.lblProgress.setMinimumSize(QtCore.QSize(80, 20))
         self.lblProgress.setMaximumSize(QtCore.QSize(80, 20))
@@ -346,23 +362,6 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.label_5.setStyleSheet("")
         self.label_5.setObjectName("label_5")
         self.gridLayout_2.addWidget(self.label_5, 1, 2, 1, 2, QtCore.Qt.AlignHCenter)
-        self.chkTrigger = PyDMCheckbox(self.page)
-        self.chkTrigger.setToolTip("")
-        self.chkTrigger.setStyleSheet("")
-        self.chkTrigger.setTristate(False)
-        self.chkTrigger.setProperty("channel", "")
-        self.chkTrigger.setObjectName("chkTrigger")
-        self.gridLayout_2.addWidget(self.chkTrigger, 2, 1, 1, 1, QtCore.Qt.AlignHCenter)
-        self.cmbAcquisition = PyDMEnumComboBox(self.page)
-        self.cmbAcquisition.setMinimumSize(QtCore.QSize(130, 0))
-        self.cmbAcquisition.setMaximumSize(QtCore.QSize(130, 16777215))
-        self.cmbAcquisition.setToolTip("")
-        self.cmbAcquisition.setProperty("alarmSensitiveBorder", False)
-        self.cmbAcquisition.setObjectName("cmbAcquisition")
-        self.gridLayout_2.addWidget(self.cmbAcquisition, 3, 1, 1, 2, QtCore.Qt.AlignLeft)
-        self.label_4 = QtWidgets.QLabel(self.page)
-        self.label_4.setObjectName("label_4")
-        self.gridLayout_2.addWidget(self.label_4, 3, 0, 1, 1, QtCore.Qt.AlignRight)
         self.edtIntegration = QtWidgets.QDoubleSpinBox(self.page)
         self.edtIntegration.setMinimumSize(QtCore.QSize(60, 0))
         self.edtIntegration.setMaximumSize(QtCore.QSize(60, 16777215))
@@ -375,43 +374,47 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.edtIntegration.setProperty("value", 0.3)
         self.edtIntegration.setObjectName("edtIntegration")
         self.gridLayout_2.addWidget(self.edtIntegration, 1, 4, 1, 1, QtCore.Qt.AlignHCenter)
-        self.label_3 = QtWidgets.QLabel(self.page)
-        self.label_3.setMinimumSize(QtCore.QSize(0, 20))
-        self.label_3.setMaximumSize(QtCore.QSize(16777215, 20))
-        font = QtGui.QFont()
-        font.setUnderline(True)
-        self.label_3.setFont(font)
-        self.label_3.setAutoFillBackground(False)
-        self.label_3.setStyleSheet("")
-        self.label_3.setObjectName("label_3")
-        self.gridLayout_2.addWidget(self.label_3, 0, 0, 1, 1, QtCore.Qt.AlignHCenter)
-        self.label_6 = QtWidgets.QLabel(self.page)
-        self.label_6.setMinimumSize(QtCore.QSize(0, 20))
-        self.label_6.setMaximumSize(QtCore.QSize(16777215, 20))
-        font = QtGui.QFont()
-        font.setUnderline(True)
-        self.label_6.setFont(font)
-        self.label_6.setStyleSheet("")
-        self.label_6.setObjectName("label_6")
-        self.gridLayout_2.addWidget(self.label_6, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
         self.chkDark = PyDMCheckbox(self.page)
         self.chkDark.setToolTip("")
         self.chkDark.setStyleSheet("")
         self.chkDark.setProperty("channel", "")
         self.chkDark.setObjectName("chkDark")
         self.gridLayout_2.addWidget(self.chkDark, 2, 0, 1, 1)
-        self.lblTemp = PyDMLabel(self.page)
-        self.lblTemp.setToolTip("")
-        self.lblTemp.setWhatsThis("")
-        self.lblTemp.setProperty("precisionFromPV", False)
-        self.lblTemp.setProperty("precision", 2)
-        self.lblTemp.setObjectName("lblTemp")
-        self.gridLayout_2.addWidget(self.lblTemp, 0, 4, 1, 1, QtCore.Qt.AlignHCenter)
+        self.chkTrigger = PyDMCheckbox(self.page)
+        self.chkTrigger.setToolTip("")
+        self.chkTrigger.setStyleSheet("")
+        self.chkTrigger.setTristate(False)
+        self.chkTrigger.setProperty("channel", "")
+        self.chkTrigger.setObjectName("chkTrigger")
+        self.gridLayout_2.addWidget(self.chkTrigger, 2, 1, 1, 1)
         self.chkAuto = PyDMCheckbox(self.page)
         self.chkAuto.setToolTip("")
         self.chkAuto.setStyleSheet("")
         self.chkAuto.setObjectName("chkAuto")
-        self.gridLayout_2.addWidget(self.chkAuto, 2, 2, 1, 3)
+        self.gridLayout_2.addWidget(self.chkAuto, 2, 2, 1, 2)
+        self.Enable_motor = QtWidgets.QCheckBox(self.page)
+        self.Enable_motor.setObjectName("Enable_motor")
+        self.gridLayout_2.addWidget(self.Enable_motor, 2, 4, 1, 1)
+        self.label_4 = QtWidgets.QLabel(self.page)
+        self.label_4.setObjectName("label_4")
+        self.gridLayout_2.addWidget(self.label_4, 3, 0, 1, 1, QtCore.Qt.AlignHCenter)
+        self.cmbAcquisition = PyDMEnumComboBox(self.page)
+        self.cmbAcquisition.setMinimumSize(QtCore.QSize(150, 0))
+        self.cmbAcquisition.setMaximumSize(QtCore.QSize(150, 16777215))
+        self.cmbAcquisition.setToolTip("")
+        self.cmbAcquisition.setProperty("alarmSensitiveBorder", False)
+        self.cmbAcquisition.setObjectName("cmbAcquisition")
+        self.gridLayout_2.addWidget(self.cmbAcquisition, 3, 1, 1, 2, QtCore.Qt.AlignHCenter)
+        self.btnAcquire = PyDMPushButton(self.page)
+        self.btnAcquire.setEnabled(True)
+        self.btnAcquire.setToolTip("")
+        self.btnAcquire.setWhatsThis("")
+        self.btnAcquire.setStyleSheet("color: rgb(255, 69, 0);\n"
+"background-color: rgb(60, 60, 60);\n"
+"")
+        self.btnAcquire.setProperty("channel", "")
+        self.btnAcquire.setObjectName("btnAcquire")
+        self.gridLayout_2.addWidget(self.btnAcquire, 3, 3, 1, 2, QtCore.Qt.AlignHCenter)
         self.label_5.raise_()
         self.label_3.raise_()
         self.lblAcquiring.raise_()
@@ -426,6 +429,7 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.label_4.raise_()
         self.btnAcquire.raise_()
         self.lblTemp.raise_()
+        self.Enable_motor.raise_()
         self.toolBox.addItem(self.page, "")
         self.page_2 = QtWidgets.QWidget()
         self.page_2.setGeometry(QtCore.QRect(0, 0, 501, 132))
@@ -471,8 +475,8 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.dSB_graus.setStyleSheet("background-color: rgb(240, 240, 240);\n"
 "color: rgb(50, 50, 50);")
         self.dSB_graus.setDecimals(2)
-        self.dSB_graus.setMinimum(-10.0)
-        self.dSB_graus.setMaximum(10.0)
+        self.dSB_graus.setMinimum(-8000.0)
+        self.dSB_graus.setMaximum(8000.0)
         self.dSB_graus.setSingleStep(0.01)
         self.dSB_graus.setProperty("value", 0.01)
         self.dSB_graus.setObjectName("dSB_graus")
@@ -534,7 +538,7 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.dSB_s.setStyleSheet("background-color: rgb(240, 240, 240);\n"
 "color: rgb(50, 50, 50);")
         self.dSB_s.setMinimum(0.1)
-        self.dSB_s.setMaximum(41.0)
+        self.dSB_s.setMaximum(20.0)
         self.dSB_s.setSingleStep(0.1)
         self.dSB_s.setObjectName("dSB_s")
         self.gridLayout_27.addWidget(self.dSB_s, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
@@ -1238,6 +1242,7 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.lcdPressure.setMaximumSize(QtCore.QSize(501, 64))
         self.lcdPressure.setStyleSheet("background-color: rgb(65, 65, 65);\n"
 "color: rgb(255, 0, 0);")
+        self.lcdPressure.setProperty("intValue", -1)
         self.lcdPressure.setObjectName("lcdPressure")
         self.gridLayout_11.addWidget(self.lcdPressure, 4, 0, 1, 2)
         self.msg_error = QtWidgets.QLabel(self.centralwidget)
@@ -1275,8 +1280,6 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.PyDMLabel_GPa.raise_()
         self.label_33.raise_()
         self.label_34.raise_()
-        self.centersOfLoren.raise_()
-        self.label_centerswaves.raise_()
         Ui_MainWindow_Ocean.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(Ui_MainWindow_Ocean)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1026, 20))
@@ -1292,7 +1295,7 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.actionOpen_2.setObjectName("actionOpen_2")
 
         self.retranslateUi(Ui_MainWindow_Ocean)
-        self.toolBox.setCurrentIndex(0)
+        self.toolBox.setCurrentIndex(1)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Ui_MainWindow_Ocean)
 
@@ -1323,12 +1326,25 @@ class Ui_Ui_MainWindow_Ocean(object):
 "    init_channel : str, optional\n"
 "        The channel to be used by the widget.\n"
 "    "))
+        self.label_3.setText(_translate("Ui_MainWindow_Ocean", " Acquire Status:"))
         self.lblAcquiring.setText(_translate("Ui_MainWindow_Ocean", "PyDMLabel"))
         self.label_2.setText(_translate("Ui_MainWindow_Ocean", "DAC Temperature (K):"))
-        self.btnAcquire.setText(_translate("Ui_MainWindow_Ocean", "Start"))
-        self.btnAcquire.setProperty("pressValue", _translate("Ui_MainWindow_Ocean", "1"))
+        self.lblTemp.setText(_translate("Ui_MainWindow_Ocean", "300"))
+        self.label_6.setText(_translate("Ui_MainWindow_Ocean", "Percentage (%):"))
         self.lblProgress.setText(_translate("Ui_MainWindow_Ocean", "PyDMLabel"))
         self.label_5.setText(_translate("Ui_MainWindow_Ocean", "Integration time (s):"))
+        self.chkDark.setWhatsThis(_translate("Ui_MainWindow_Ocean", "\n"
+"    A QCheckbox with support for Channels and more from PyDM\n"
+"\n"
+"    Parameters\n"
+"    ----------\n"
+"    parent : QWidget\n"
+"        The parent widget for the Label\n"
+"    init_channel : str, optional\n"
+"        The channel to be used by the widget.\n"
+"\n"
+"    "))
+        self.chkDark.setText(_translate("Ui_MainWindow_Ocean", "Dark Correction  "))
         self.chkTrigger.setWhatsThis(_translate("Ui_MainWindow_Ocean", "\n"
 "    A QCheckbox with support for Channels and more from PyDM\n"
 "\n"
@@ -1341,6 +1357,20 @@ class Ui_Ui_MainWindow_Ocean(object):
 "\n"
 "    "))
         self.chkTrigger.setText(_translate("Ui_MainWindow_Ocean", "Trigger"))
+        self.chkAuto.setWhatsThis(_translate("Ui_MainWindow_Ocean", "\n"
+"    A QCheckbox with support for Channels and more from PyDM\n"
+"\n"
+"    Parameters\n"
+"    ----------\n"
+"    parent : QWidget\n"
+"        The parent widget for the Label\n"
+"    init_channel : str, optional\n"
+"        The channel to be used by the widget.\n"
+"\n"
+"    "))
+        self.chkAuto.setText(_translate("Ui_MainWindow_Ocean", "2nd peak line plot"))
+        self.Enable_motor.setText(_translate("Ui_MainWindow_Ocean", "Enable motor"))
+        self.label_4.setText(_translate("Ui_MainWindow_Ocean", "Acquisition Mode:"))
         self.cmbAcquisition.setWhatsThis(_translate("Ui_MainWindow_Ocean", "\n"
 "    A QComboBox with support for Channels and more from PyDM\n"
 "\n"
@@ -1363,34 +1393,8 @@ class Ui_Ui_MainWindow_Ocean(object):
 "        Emitted when an item in the combobox popup list is highlighted\n"
 "        by the user.\n"
 "    "))
-        self.label_4.setText(_translate("Ui_MainWindow_Ocean", "Acquistion Mode:"))
-        self.label_3.setText(_translate("Ui_MainWindow_Ocean", " Acquire Status:"))
-        self.label_6.setText(_translate("Ui_MainWindow_Ocean", "Percentage (%):"))
-        self.chkDark.setWhatsThis(_translate("Ui_MainWindow_Ocean", "\n"
-"    A QCheckbox with support for Channels and more from PyDM\n"
-"\n"
-"    Parameters\n"
-"    ----------\n"
-"    parent : QWidget\n"
-"        The parent widget for the Label\n"
-"    init_channel : str, optional\n"
-"        The channel to be used by the widget.\n"
-"\n"
-"    "))
-        self.chkDark.setText(_translate("Ui_MainWindow_Ocean", "Dark Correction  "))
-        self.lblTemp.setText(_translate("Ui_MainWindow_Ocean", "300"))
-        self.chkAuto.setWhatsThis(_translate("Ui_MainWindow_Ocean", "\n"
-"    A QCheckbox with support for Channels and more from PyDM\n"
-"\n"
-"    Parameters\n"
-"    ----------\n"
-"    parent : QWidget\n"
-"        The parent widget for the Label\n"
-"    init_channel : str, optional\n"
-"        The channel to be used by the widget.\n"
-"\n"
-"    "))
-        self.chkAuto.setText(_translate("Ui_MainWindow_Ocean", "Pressure detection: 2nd peak line"))
+        self.btnAcquire.setText(_translate("Ui_MainWindow_Ocean", "Start"))
+        self.btnAcquire.setProperty("pressValue", _translate("Ui_MainWindow_Ocean", "1"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.page), _translate("Ui_MainWindow_Ocean", "Spectrometer settings: Sensor"))
         self.PyDMPushButton_stop.setWhatsThis(_translate("Ui_MainWindow_Ocean", "\n"
 "    Basic PushButton to send a fixed value.\n"
@@ -1429,8 +1433,8 @@ class Ui_Ui_MainWindow_Ocean(object):
 "\n"
 "    "))
         self.PyDMPushButton_stop.setText(_translate("Ui_MainWindow_Ocean", "Pause"))
-        self.label_28.setText(_translate("Ui_MainWindow_Ocean", "GB efficiency (%)"))
-        self.checkBox_degrees.setText(_translate("Ui_MainWindow_Ocean", "Δ GPa"))
+        self.label_28.setText(_translate("Ui_MainWindow_Ocean", "Efficiency (%)"))
+        self.checkBox_degrees.setText(_translate("Ui_MainWindow_Ocean", "Δ mm"))
         self.checkBox_Gpa.setText(_translate("Ui_MainWindow_Ocean", "GPa"))
         self.PyDMDrawingLine_4.setWhatsThis(_translate("Ui_MainWindow_Ocean", "\n"
 "    A widget with a line drawn in it.\n"

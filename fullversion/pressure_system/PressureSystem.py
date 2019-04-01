@@ -20,6 +20,8 @@ from pyqtgraph import InfiniteLine
 from pressure_system.pressure_system_motor.Nema23 import Nema23
 import time
 import os
+from docutils.nodes import header
+from distutils import text_file
 class PressureSystem(object):
     '''
     Pressure System is a class that contains the following classes:
@@ -36,6 +38,10 @@ class PressureSystem(object):
         Constructor: Ocean Optics window -> It is command and supervisory window 
         '''
         self.ui = Ui_Ui_MainWindow_Ocean()
+        self.GPA_r = [] #GPa_real
+        self.REVS_r= [] #Revs_real
+        self.REVS_d = [] #Revs_desired
+        self.revs_desired = None
 
     def setupUi(self,object = None):
         '''
@@ -219,6 +225,45 @@ class PressureSystem(object):
         '''
         Callback of OceanSpectrometer: Every time that there is a new data, this function will work
         '''
+        ''' Save data for modeling'''
+        #self.saveData(gpa_real = 0) 
+        start = time.time()
+        if(self.pressureGraphDataCalculation(wl)): #If wavelength makes sense
+            
+            ''' Line plot of detected pressure should follow graphs'''  
+            if (self.ui.chkAuto.isChecked()): #The user wants to PLOT/search peaks automatically
+                self.plotAutomaticLineOnGraph(plot=True, w_l=wl[0] ,_label='process variable') #Plot
+                self.wavelength = wl #Save wavelength in order to set pressure in standard condition
+            else:
+                self.plotAutomaticLineOnGraph(plot=False)
+            
+            if (self.SensorOcean.ocean.pvAcMode.get() == 1): #Real time is happening
+                self.setRealPressure(flag=True, gpa_real= self.graphdata.press2)#Motion! Go!
+                ''' Save data for modeling'''
+                #self.saveData(gpa_real = self.graphdata.press2) 
+            else:
+                self.setRealPressure(flag=False, gpa_real= 0) #Pause. It is not safe to start 
+                
+        else:
+            ''' Save data for modeling'''
+            #self.saveData(gpa_real = -1) 
+            
+            
+            self.setRealPressure(flag=False, gpa_real= 0) #Pause motor 
+            self.ui.lcdPressure.display('-1') 
+            self.plotAutomaticLineOnGraph(plot=False) #Stop plotting
+            
+        ''' Line plot of desired pressure should follow graphs'''
+        self.plotRealTimeLineDesired()
+        
+        stop = time.time()
+        print('Time exec: ',(stop-start))
+        
+        
+    def searchPressure_old(self,wl):
+        '''
+        Callback of OceanSpectrometer: Every time that there is a new data, this function will work
+        '''
         if(self.pressureGraphDataCalculation(wl)): #If wavelength makes sense
             if (self.ui.chkAuto.isChecked()): #The user wants to PLOT/search peaks automatically
                 if self.SensorOcean.ocean.pvAcMode.get() == 1: #Real time is happening
@@ -295,7 +340,7 @@ class PressureSystem(object):
             if t > 0.01:
                 return t
             else:
-                self.ui.lblTemp.setText('--')
+                self.ui.lblTemp.setText('300')
                 return 300
         except OSError as err:
             self.showDialog("Temperature value is not valid",err)
@@ -484,7 +529,7 @@ class PressureSystem(object):
                 else:
                     self.showDialog('Fatal Error on initial value settings','Fatal Error on initial value settings')
             else:
-                self.showDialog("Error: wavelength is None or search peaks is not checked",'Error: wavelength is None or search peaks is not checked')
+                self.showDialog("Error: wavelength is None or search peaks is not checked","Error: wavelength is None or '2nd peak plot line' is not checked")
         except OSError as err:
             self.showDialog("Error: Initial value settings",err)
 
@@ -510,12 +555,60 @@ class PressureSystem(object):
         self.machine.pause()
         self.machine.motion.connect(self.motion_end)
        
-        
+    
+    def saveData(self,pathComp = '/home/ABTLUS/rodrigo.guercio/Downloads/gearBox/gear1.txt',gpa_real = 0 ):
+        try:
+            import numpy as np
+            self.GPA_r.append(gpa_real)
+            self.REVS_r.append(self.machine.motorNema.getDialRealPosition())
+            self.REVS_d.append(self.ui.dSB_graus.value())
+            np.savetxt(fname = pathComp, X = np.array([self.GPA_r, self.REVS_r, self.REVS_d]).T, newline = '\n')
+            
+            if ((os.path.isfile(pathComp))):
+                print('Save file for modeling')
+                return True
+            else:
+                print('Not Save file for modeling')
+                return False
+        except OSError as err:
+            print('Not Save file for modeling')
+            return False
+    
         
     def motion_end(self):
         self.ui.msg_error.setText('Pressure motion was completed!')
 
-    def moveMotor(self):
+    def moveMotor(self): #User Start
+        self.pauseUser = False
+        if self.getparams():
+            if self.machine.isRunning():
+                self.ui.msg_error.setText('Error: Motor is running. You should pause motor!')
+            else:
+                self.startMotor()
+        else:
+            print('User data inputs are wrongs')
+            
+    def startMotor(self): #System Start
+        if self.pauseUser:
+            self.ui.msg_error.setText("User command 'Pause' detected")
+        elif not(self.ui.Enable_motor.isChecked()):
+            self.ui.msg_error.setText("Go to 'Spectrometer Setting: Sensor' to enable automation")
+        else:
+            if self.machine.settings_motion(desired_rps = self.rps, efficiency_= self.eff, revs_onM4 = self.revs_desired):
+                self.machine.start()
+                self.colourYellowCircle() 
+            else:
+                self.ui.msg_error.setText("Starting error: Motor settings on PV ")  
+                
+    def pauseMotor(self): #User Pause
+        self.pauseUser = True
+        self.pauseMotor_automatic()
+        self.colourWhiteCircle()
+    
+    def pauseMotor_automatic(self): #System Pause
+        self.machine.pause()
+    
+    def moveMotor_old(self):
         self.pauseUser = False
         if self.getparams():
             if self.machine.isRunning():
@@ -527,8 +620,9 @@ class PressureSystem(object):
                     self.startMotor()
         else:
             self.ui.msg_error.setText('User data inputs are wrongs')
-            
-    def startMotor(self):
+                  
+    
+    def startMotor_old(self):
         if self.pauseUser:
             self.ui.msg_error.setText("User command 'Pause' detected")
         else:
@@ -538,13 +632,9 @@ class PressureSystem(object):
                 self.colourYellowCircle() 
             else:
                 self.ui.msg_error.setText("Error: Motor settings on PV ")
+
     
-    def pauseMotor(self):
-        self.pauseUser = True
-        self.pauseMotor_automatic()
-        self.colourWhiteCircle()
-    
-    def pauseMotor_automatic(self):
+    def pauseMotor_automatic_old(self):
         self.machine.pause()
         self.moveFlag = False
     
@@ -568,13 +658,23 @@ class PressureSystem(object):
             return False
         elif self.ui.checkBox_Gpa.isChecked() and not(self.ui.checkBox_degrees.isChecked()):
             ''' Automatic motion to desired pressue'''
-            self.gpa_desired = self.ui.dSB_gpa.value()
-            self.revs_desired = self.revsEstimationAndGo(self.gpa_desired, 0)
-            self.automoveFlag = True
-            return True
+            if self.ui.lcdPressure.value() == -1:
+                self.automoveFlag = False
+                self.ui.msg_error.setText('Pressure not detected. See spectrometer settings')
+                return False
+            elif (self.SensorOcean.ocean.pvAcMode.get() == 1): #Real time is happening
+                self.gpa_desired = self.ui.dSB_gpa.value()
+                self.revs_desired = self.revsEstimationAndGo(self.gpa_desired, self.graphdata.press2) #self.revs_desired = self.revsEstimationAndGo(self.gpa_desired, 0)
+                self.automoveFlag = True
+                return True
+            else:
+                self.automoveFlag = False
+                self.ui.msg_error.setText('Error: Acquisition Mode -> Continuous')
+                return False
+            
         elif self.ui.checkBox_degrees.isChecked() and not(self.ui.checkBox_Gpa.isChecked()):
             ''' Manual pressure adjustment ''' 
-            self.revs_desired = self.revsEstimationAndGo(self.ui.dSB_graus.value() , 0) 
+            self.revs_desired = self.ui.dSB_graus.value()/1 #Fuso igual to 0.5 mm
             self.automoveFlag = False
             return True
         else:
@@ -592,7 +692,32 @@ class PressureSystem(object):
             self.ui.msg_error.setText('Real pressure is negative :(')
             return 0
     
+    
     def setRealPressure(self,flag = False, gpa_real = 0):
+        try:
+            if (self.automoveFlag): #Automation motion on motor widget was  selected 
+                if flag: #Is there real value ?
+                    if self.checkNiceRange(self.gpa_desired, gpa_real): #gpa_real == self.gpa_desired: #Is it the desired value ?
+                        self.pauseMotor_automatic() #System Pause
+                        self.colourGreenCircle() #Finished motion! Every thing is ok!
+                    elif not(self.machine.isRunning()): #It is the stopped but it is not the desired value! 
+                        self.revs_desired = self.revsEstimationAndGo(self.gpa_desired, gpa_real) #New estimation 
+                        self.startMotor() #Go
+                    else: #No pause by User and the motor is running;
+                        self.colourBlueCircle(gpa_real) #It is running
+                else:
+                    self.pauseMotor_automatic() #System Pause
+                    self.colourGrayCircle()
+            elif (self.machine.isRunning()): 
+                self.colourBlueCircle(gpa_real) #It is running
+            else:
+                self.colourWhiteCircle()
+                #self.ui.msg_error.setText("Check what you need: GPa or Δ mm")
+        except Exception as e:
+            print ("Unexpected error -- Create Motor --:", sys.exc_info()[0])
+            print ("Error %s" % str(e))
+    
+    def setRealPressure_old(self,flag = False, gpa_real = 0):
         try:
             if (self.automoveFlag): #Automation motion on motor widget was  selected
                 if flag: #Is there real value ?
@@ -627,13 +752,15 @@ class PressureSystem(object):
             else:  
                 return False
         else: # gpa_real >= gpa_desired
+            return True #If real pressure is bigger than desired pressure, the motor should not go backward
+            '''
             if (gpa_real <= 0):
                 gpa_real = 0.01
             if (gpa_desired/gpa_real >= 0.98):
                 return True
             else:
                 return False
-            
+            '''
     def colourGreenCircle(self):
         brush = QtGui.QBrush(QtGui.QColor(0, 200, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -650,6 +777,7 @@ class PressureSystem(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         self.ui.PyDMDrawingCircle.setProperty("brush", brush)
+        
     
     def colourBlueCircle(self,gpa_real):
         if (gpa_real%0.02 > 0.005):
