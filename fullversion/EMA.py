@@ -173,6 +173,7 @@ class EmaApp (object):
         ''' PV names edition '''
         self.pvname_ocean = self.ui_pvnames.lineEdit_spec.text()
         self.pvname_motorGearBox = self.ui_pvnames.lineEdit_motor.text()
+        self.pvname_motorGearBox = 'DMC01:A'
         self.pvname_lakeshore = self.ui_pvnames.lineEdit_LS.text()
     
     def acceptedChanges_pvname(self):

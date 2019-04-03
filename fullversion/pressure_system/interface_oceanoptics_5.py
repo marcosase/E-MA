@@ -538,7 +538,7 @@ class Ui_Ui_MainWindow_Ocean(object):
         self.dSB_s.setStyleSheet("background-color: rgb(240, 240, 240);\n"
 "color: rgb(50, 50, 50);")
         self.dSB_s.setMinimum(0.1)
-        self.dSB_s.setMaximum(20.0)
+        self.dSB_s.setMaximum(80.0)
         self.dSB_s.setSingleStep(0.1)
         self.dSB_s.setObjectName("dSB_s")
         self.gridLayout_27.addWidget(self.dSB_s, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)

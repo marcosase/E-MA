@@ -240,13 +240,13 @@ class PressureSystem(object):
             if (self.SensorOcean.ocean.pvAcMode.get() == 1): #Real time is happening
                 self.setRealPressure(flag=True, gpa_real= self.graphdata.press2)#Motion! Go!
                 ''' Save data for modeling'''
-                #self.saveData(gpa_real = self.graphdata.press2) 
+                self.saveData(gpa_real = self.graphdata.press2) 
             else:
                 self.setRealPressure(flag=False, gpa_real= 0) #Pause. It is not safe to start 
                 
         else:
             ''' Save data for modeling'''
-            #self.saveData(gpa_real = -1) 
+            self.saveData(gpa_real = -1) 
             
             
             self.setRealPressure(flag=False, gpa_real= 0) #Pause motor 
@@ -641,7 +641,7 @@ class PressureSystem(object):
     def getparams(self):
         try:
             self.rps = self.ui.dSB_s.value()#self.dr = float(self.ui.lineEdit_rps.text())
-            self.eff = self.ui.dSB_eff.value()/100#self.ef = float(self.ui.lineEdit_eff.text())
+            self.eff = self.ui.dSB_eff.value()#self.ef = float(self.ui.lineEdit_eff.text())
             return self.revsSetup() #Setting number of revolutions 
         except Exception as e:
             print ("Unexpected error -- getparams --:", sys.exc_info()[0])
@@ -685,8 +685,9 @@ class PressureSystem(object):
         
     
     def revsEstimationAndGo(self,gpa__desired, gpa__real):
-        if (gpa__real >= 0):
-            revs = gpa__desired - gpa__real
+        kp = 10
+        if (gpa__real >= 0 and gpa__desired > gpa__real):
+            revs = (gpa__desired - gpa__real)*self.eff*kp #Delta GPA * REV/GPA
             return revs
         else:
             self.ui.msg_error.setText('Real pressure is negative :(')

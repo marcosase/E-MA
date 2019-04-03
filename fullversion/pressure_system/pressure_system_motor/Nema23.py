@@ -72,7 +72,7 @@ class Nema23(QThread):
     def revs_approx(self):
         ''' revs_onM4 is linked to how many revolutions the bolt will be rev'''
         #Steady time on motor
-        revs_total = self.revs_onM4*self.efficiency #revs
+        revs_total = self.revs_onM4  #self.revs_onM4*self.efficiency #revs
         
         return revs_total
     
@@ -134,7 +134,7 @@ class Nema23(QThread):
             print ("Error %s" % str(e))
             return False
         
-    def settings_motion(self,desired_dir = 0,time_accl = 2,desired_rps = 1.0,gearbox_reduce = 1, efficiency_ = 1,revs_onM4 = 0.1):
+    def settings_motion(self,desired_dir = 0,time_accl = 1,desired_rps = 1.0,gearbox_reduce = 1, efficiency_ = 1,revs_onM4 = 0.1):
         #SREV -> VDE SMAX -> VDE BVEL -> VDE
         try:
             delay = self.motorNema.motor.get('DLY')

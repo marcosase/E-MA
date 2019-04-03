@@ -1,14 +1,10 @@
 --------------------------------------------------------------------------------
-2019-03-29, 17:29:31
+2019-04-03, 11:11:54
 --------------------------------------------------------------------------------
-<class 'AttributeError'>: 
-'SingleCrystalSystem' object has no attribute 'angle_step'
+<class 'TypeError'>: 
+text(self): too many arguments
 --------------------------------------------------------------------------------
-  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/EMA.py", line 85, in dioptasFinishedTask
-    self.singleCrystal_MotorEventControl()
-  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/EMA.py", line 64, in singleCrystal_MotorEventControl
-    self.ui_singlecrystal.move()
-  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/singleCrystal_system/SingleCrystalSystem.py", line 61, in move
-    if self.angle_step is not None:
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/pressure_system/PressureSystem.py", line 528, in getDataFromRealTime
+    self.ui.LineEdit_tempBase_2.text(temp0)
 --------------------------------------------------------------------------------
 Dioptas Version: 0.4.1
