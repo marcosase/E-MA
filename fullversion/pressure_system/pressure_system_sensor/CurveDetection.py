@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import pylab
 
 
-def indexes(input_array,axis_x, thres = 0.3, error_fit = 0.5, deltaMin_nm = 1.0):
+def indexes(input_array,axis_x, thres = 0.01, error_fit = 0.5, deltaMin_nm = 1.0):
     '''Peak detection routine.
     Finds the peaks in *y* by taking its first order difference. By using
     *thres* and *min_dist* parameters, it is possible to reduce the number of
@@ -62,17 +62,19 @@ def indexes(input_array,axis_x, thres = 0.3, error_fit = 0.5, deltaMin_nm = 1.0)
             
             ''' Calculating the center of lorentzian '''
             if majors.size > 1:
-                center_right= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
-                center_left = lorentzian_fit(x,y,majors[1], error = error_fit,range_sample = min_dist)   
+                [center_right,I2]= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
+                [center_left,I1] = lorentzian_fit(x,y,majors[1], error = error_fit,range_sample = min_dist)   
                 
                 ''' Are centers float or int numbers ?'''
                 if center_left is not None or center_right is not None:
                     center_left = np.round_(a = center_left, decimals = 2) #nm
                     center_right = np.round_(a = center_right, decimals = 2) #nm
                     
-                    'Rightmost peak is bigger than leftmost peak (nm) and their relative distance is smaller than 4 nm, for example'
-                    if ((center_right > center_left) and (center_right - center_left) < 4*deltaMin_nm): #(wl[0] > wl[1]) and (wl[0] - wl[1] < 120.5): #rightmost peak should greater than leftmost
-                        return np.array([center_right,center_left])
+                    'Rightmost peak is bigger than leftmost peak (nm) and their relative distance is smaller than 5 nm, for example'
+                    if ((center_right > center_left) and (center_right - center_left) < 5*deltaMin_nm): #(wl[0] > wl[1]) and (wl[0] - wl[1] < 120.5): #rightmost peak should greater than leftmost
+                        temp = temperatureCalculate(I1, I2)
+                        print('Int. peaks:', I1,I2,temp)
+                        return np.array([center_right,center_left,temp])
                     else: 
                         return None
                     
@@ -85,7 +87,7 @@ def indexes(input_array,axis_x, thres = 0.3, error_fit = 0.5, deltaMin_nm = 1.0)
                 ''' Are centers float or int numbers ?'''
                 if center_right is not None:
                     center_right = np.round_(a = center_right, decimals = 2) #nm
-                    return np.array([center_right,-1])
+                    return np.array([center_right,-1,300])
                 else:
                     return None
                 
@@ -95,6 +97,20 @@ def indexes(input_array,axis_x, thres = 0.3, error_fit = 0.5, deltaMin_nm = 1.0)
             
     except:
         return None
+    
+def temperatureCalculate(intensity_peak1,intensity_peak2):
+    '''
+    temperatureCalculate
+    '''
+    try:
+        intensity_peak1 = float(intensity_peak1)
+        intensity_peak2 = float(intensity_peak2)
+            
+        temp = ((-3.55/0.08617343))/(math.log(intensity_peak1/(0.65*intensity_peak2)))
+        temp = round(temp,1)
+        return temp
+    except:
+        return 300    
 
 def filterPeaks(y,peaks,min_dist):
     ''' Filter peaks according to minimum distance between them '''
@@ -222,11 +238,11 @@ def lorentzian_fit(x, y,peak, error = 0.10,range_sample = 10):
             #print('Error:', np.sum(perr))
             #print('Params :',params)
             if np.sum(perr) < error:
-                return float(params[1])
+                return float(params[1]),float(0.637*params[0]/params[2])
             else:
-                return None
+                return None,None
     except:
-        return x[peak]
+        return x[peak],y[peak]
     
 def lorentzian_fit2(x, y,peak):
     #initial = [np.max(y), x[i], (x[i+1] - x[i]) * 5]
@@ -383,11 +399,40 @@ def mult_params_peaks_Lorentzian(x,y):
          
 if __name__ == '__main__':
     pass
+    PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/3test/GearBox/goldenPressure/subidarubi/'
+    #PATH ='/home/ABTLUS/rodrigo.guercio/Downloads/'
+    name = 'au_002_21p85_GPa_d_n016.txt'
+    name = 'au_002_6p36_GPa_d_n000.txt'
+    #name = 'lab6_17p5GPa_6p67K_n000.txt'
+    #name = 'GdPtBi_0p95GPa_300K_n000.txt'
+    [x,y] = np.loadtxt(fname = PATH+name, delimiter = '\t', skiprows = 0, unpack = True, ndmin = 0)
+    plt.figure(1)
+    y = normalizeY(y)
+    plt.plot(x,y,'r--')
+    wavelength = indexes(y,x)
+                
+    if wavelength is not None:
+        print(wavelength)
+        print(wavelength[2])
+    else:
+        print(wavelength[2])
+        
+    
+    print(temperatureCalculate(0.01,1))
+    print(temperatureCalculate(0.03,1))
+    print(temperatureCalculate(0.2,1))
+    print(temperatureCalculate(0.3,1))
+    print(temperatureCalculate(0.44,1))
+    
+    y[y<0.03*np.max(y)] = 0
+    plt.plot(x,y,'*b')
+    pylab.show() 
+    '''
     import random
     for i in range(1,2):
         a = random.uniform(1,20)
         b = random.uniform(-10,10)
-        c = random.uniform(-5,10)
+        c = random.uniform(-5,10)GdPtBi_0p95GPa_300K_n000
         x_1 = 680 + a
         r_1 = 10 + a
         x_2 = 700 + b
@@ -417,4 +462,5 @@ if __name__ == '__main__':
             print(y[peaks])
             print('------')
         
-    pylab.show()    
+    pylab.show()  
+    '''  

@@ -97,7 +97,7 @@ class SensorOcean(QThread):
                 if wavelength is not None:
                     self.signal.emit(wavelength)
                 else:
-                    self.signal.emit(np.array([-1,-1]))
+                    self.signal.emit(np.array([-1,-1,-1]))
             
         except OSError as err:
             self.error_message.emit("Fatal exception error! Close E-MA application! ->"

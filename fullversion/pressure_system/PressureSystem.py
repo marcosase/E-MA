@@ -289,6 +289,7 @@ class PressureSystem(object):
             
             if wl is not None: 
                 self.ui.label_centerswaves.setText(str(wl[1]) + '  ' + str(wl[0]))
+                self.ui.lblTemp_rubi.setText(str(wl[0]))
                 if (wl[0] == -1) or (wl[1] == -1):
                     return False
                 else:
@@ -328,7 +329,7 @@ class PressureSystem(object):
             self.showDialog("Error on pressure GraphData Calculation",err)
             return False
     
-    def getTemp4auto(self):
+    def getTemp4auto_lblTemp(self): #Sensor was correct
         ''' Data from OceanSpectrometer '''
         try:
             ''' When we have LakeShore '''
@@ -346,6 +347,13 @@ class PressureSystem(object):
             self.showDialog("Temperature value is not valid",err)
             return None
 
+    def getTemp4auto(self):
+        try:
+            temp = self.ui.doubleSpinBox_lblTemp.value()
+            return temp
+        except OSError as err:
+            self.showDialog("Temperature value is not valid",err)
+            return None
     
     def displayONlcd(self,data):
         ''' Display Pressure on LCD '''
