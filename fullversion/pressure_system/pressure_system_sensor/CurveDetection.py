@@ -127,6 +127,13 @@ def filterPeaks(y,peaks,min_dist):
     peaks = np.arange(y.size)[~rem]
     majors = peaks[np.argsort(y[peaks])][::-1]
     
+    if majors.size > 1:
+        minors = 0
+        minors = np.where(majors < majors[0])[0]
+        #inors = np.where(majors < 1)[0]
+        if minors.size > 0:
+            majors[1] = majors[minors[0]]
+        
     return majors
 
 def getTwoMajorPeaks(majors): 
@@ -399,12 +406,15 @@ def mult_params_peaks_Lorentzian(x,y):
          
 if __name__ == '__main__':
     pass
-    PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/3test/GearBox/goldenPressure/subidarubi/'
+    #ATH = '/home/ABTLUS/rodrigo.guercio/Pictures/3test/GearBox/goldenPressure/subidarubi/'
     #PATH ='/home/ABTLUS/rodrigo.guercio/Downloads/'
+    PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/barbara/'
     name = 'au_002_21p85_GPa_d_n016.txt'
     name = 'au_002_6p36_GPa_d_n000.txt'
     #name = 'lab6_17p5GPa_6p67K_n000.txt'
     #name = 'GdPtBi_0p95GPa_300K_n000.txt'
+    name = 'f_10_r_11_n001.txt'
+    #ame = 'f_80_r_80_n002.txt'
     [x,y] = np.loadtxt(fname = PATH+name, delimiter = '\t', skiprows = 0, unpack = True, ndmin = 0)
     plt.figure(1)
     y = normalizeY(y)
@@ -418,11 +428,11 @@ if __name__ == '__main__':
         print(wavelength[2])
         
     
-    print(temperatureCalculate(0.01,1))
-    print(temperatureCalculate(0.03,1))
-    print(temperatureCalculate(0.2,1))
-    print(temperatureCalculate(0.3,1))
-    print(temperatureCalculate(0.44,1))
+    #print(temperatureCalculate(0.01,1))
+    #print(temperatureCalculate(0.03,1))
+    #print(temperatureCalculate(0.2,1))
+    #print(temperatureCalculate(0.3,1))
+    #print(temperatureCalculate(0.44,1))
     
     y[y<0.03*np.max(y)] = 0
     plt.plot(x,y,'*b')

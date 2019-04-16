@@ -240,13 +240,13 @@ class PressureSystem(object):
             if (self.SensorOcean.ocean.pvAcMode.get() == 1): #Real time is happening
                 self.setRealPressure(flag=True, gpa_real= self.graphdata.press2)#Motion! Go!
                 ''' Save data for modeling'''
-                self.saveData(gpa_real = self.graphdata.press2) 
+                #self.saveData(gpa_real = self.graphdata.press2) 
             else:
                 self.setRealPressure(flag=False, gpa_real= 0) #Pause. It is not safe to start 
                 
         else:
             ''' Save data for modeling'''
-            self.saveData(gpa_real = -1) 
+            # self.saveData(gpa_real = -1) 
             
             
             self.setRealPressure(flag=False, gpa_real= 0) #Pause motor 
@@ -289,7 +289,7 @@ class PressureSystem(object):
             
             if wl is not None: 
                 self.ui.label_centerswaves.setText(str(wl[1]) + '  ' + str(wl[0]))
-                self.ui.lblTemp_rubi.setText(str(wl[0]))
+                self.ui.lblTemp_rubi.setText(str(wl[2]))
                 if (wl[0] == -1) or (wl[1] == -1):
                     return False
                 else:
