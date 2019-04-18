@@ -56,17 +56,18 @@ def indexes(input_array,axis_x, thres = 0.01, error_fit = 0.5, deltaMin_nm = 1.0
         
         #print('Indexes - Peaks:',peaks)
         ''' '''
-        if peaks.size > 1 and min_dist > 1:
+        if peaks.size > 1 and min_dist > 1: #There is some peak
             ''' Filter peaks according to minimum distance between them '''
             majors = filterPeaks(y, peaks, min_dist)
             
             ''' Calculating the center of lorentzian '''
-            if majors.size > 1:
-                [center_right,I2]= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
+            if majors.size > 1: #There is more than one peak
+                x_for_max_y = np.round_(a = x[majors[0]], decimals = 2) #nm
+                [center_right,I2] = lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
                 [center_left,I1] = lorentzian_fit(x,y,majors[1], error = error_fit,range_sample = min_dist)   
                 
-                ''' Are centers float or int numbers ?'''
-                if center_left is not None or center_right is not None:
+                ''' Are centers float or int numbers ?''' #Fitting is enough to detect peaks
+                if center_left is not None and center_right is not None:
                     center_left = np.round_(a = center_left, decimals = 2) #nm
                     center_right = np.round_(a = center_right, decimals = 2) #nm
                     
@@ -76,10 +77,10 @@ def indexes(input_array,axis_x, thres = 0.01, error_fit = 0.5, deltaMin_nm = 1.0
                         print('Int. peaks:', I1,I2,temp)
                         return np.array([center_right,center_left,temp])
                     else: 
-                        return None
+                        return np.array([x_for_max_y,-1,-1])
                     
                 else:
-                    return None
+                    return np.array([x_for_max_y,-1,-1])
                
             elif majors.size == 1:
                 center_right= lorentzian_fit(x,y,majors[0], error = error_fit,range_sample = min_dist)
@@ -87,14 +88,16 @@ def indexes(input_array,axis_x, thres = 0.01, error_fit = 0.5, deltaMin_nm = 1.0
                 ''' Are centers float or int numbers ?'''
                 if center_right is not None:
                     center_right = np.round_(a = center_right, decimals = 2) #nm
-                    return np.array([center_right,-1,300])
+                    return np.array([center_right,-1,-1])
                 else:
-                    return None
+                    return np.array([x_for_max_y,-1,-1])
                 
             else:
                 'If there no peak'
                 return None
-            
+        else:
+            'There is no peak'
+            return None    
     except:
         return None
     
@@ -249,7 +252,8 @@ def lorentzian_fit(x, y,peak, error = 0.10,range_sample = 10):
             else:
                 return None,None
     except:
-        return x[peak],y[peak]
+        return None,None
+        #return x[peak],y[peak]
     
 def lorentzian_fit2(x, y,peak):
     #initial = [np.max(y), x[i], (x[i+1] - x[i]) * 5]
@@ -406,15 +410,22 @@ def mult_params_peaks_Lorentzian(x,y):
          
 if __name__ == '__main__':
     pass
-    #ATH = '/home/ABTLUS/rodrigo.guercio/Pictures/3test/GearBox/goldenPressure/subidarubi/'
+    PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/3test/GearBox/goldenPressure/subidarubi/'
     #PATH ='/home/ABTLUS/rodrigo.guercio/Downloads/'
-    PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/barbara/'
-    name = 'au_002_21p85_GPa_d_n016.txt'
-    name = 'au_002_6p36_GPa_d_n000.txt'
+    #PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/barbara/'
+    #PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/Ruby_kousik/'
+    #name = 'au_002_21p85_GPa_d_n016.txt'
+    #name = 'au_002_6p36_GPa_d_n000.txt'
     #name = 'lab6_17p5GPa_6p67K_n000.txt'
     #name = 'GdPtBi_0p95GPa_300K_n000.txt'
     name = 'f_10_r_11_n001.txt'
     #ame = 'f_80_r_80_n002.txt'
+    #name = 'Ruby_8p69GPa_14K_n005.txt'
+    #name = 'Ruby_29p82GPa_14K_n016.txt'
+    #name = 'Ruby_52p30GPa_14K_n020.txt'
+    #name = 'Ruby_17K_n001.txt'
+    #name = 'Ruby_55p30GPa_14K_Problem_n021.txt'
+    name = 'au_002_25p63_GPa_d_n020.txt'
     [x,y] = np.loadtxt(fname = PATH+name, delimiter = '\t', skiprows = 0, unpack = True, ndmin = 0)
     plt.figure(1)
     y = normalizeY(y)
@@ -423,9 +434,9 @@ if __name__ == '__main__':
                 
     if wavelength is not None:
         print(wavelength)
-        print(wavelength[2])
+        #print(wavelength[2])
     else:
-        print(wavelength[2])
+        print(wavelength)
         
     
     #print(temperatureCalculate(0.01,1))
@@ -434,7 +445,7 @@ if __name__ == '__main__':
     #print(temperatureCalculate(0.3,1))
     #print(temperatureCalculate(0.44,1))
     
-    y[y<0.03*np.max(y)] = 0
+    y[y<0.01*np.max(y)] = 0
     plt.plot(x,y,'*b')
     pylab.show() 
     '''

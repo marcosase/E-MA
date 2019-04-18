@@ -185,7 +185,6 @@ class PressureSystem(object):
         try:
             #btn_str = self.ui.btnAcquire.text() #Get text of start button
             btn_int = self.SensorOcean.ocean.pvStart.get() #We changed btn_st per btn_int
-        
             if(btn_int == 0): #Acquiring is not happening
                 cmd_str = self.SensorOcean.ocean.pvAcMode.get()
                 if (cmd_str == 0): 
@@ -207,7 +206,47 @@ class PressureSystem(object):
         except OSError as err:
             self.showDialog("Manager User Interface for acquisition",err)
     
+    def managerUserInterfaceforacquisition_start(self):
+        try:
+            #See the starting status
+            btn_int = self.SensorOcean.ocean.pvStart.get() #We changed btn_st per btn_int
+            if btn_int == 0:#Acquiring is not happening
+                #Anyway... Get time of integration and send to ocean
+                self.SensorOcean.editIntegrationTime(timeValue = self.ui.edtIntegration.value())
+                cmd_str = self.SensorOcean.ocean.pvAcMode.get() #Which mode is ?
+                self.checkPlot()
+                if (cmd_str == 1): #Continuous ?
+                    self.setEnabled_widgets(False)
+            else:
+                self.showDialog("Acquiring is happening", "Acquiring is happening! Wait!")   
+            
+        except OSError as err:
+            self.showDialog("Manager User Interface for acquisition",err)
+            
+    def managerUserInterfaceforacquisition_stop(self):
+        try:
+            #See the starting status
+            btn_int = self.SensorOcean.ocean.pvStart.get() #We changed btn_st per btn_int
+            cmd_str = self.SensorOcean.ocean.pvAcMode.get() #Which mode is ?
+            if (btn_int == 1) and (cmd_str == 1):#Acquiring is happening
+                self.SensorOcean.ocean.pvStart.put(0) # I know, it makes no sense
+                self.checkPlot()
+                self.setEnabled_widgets(True)
+            else:
+                self.showDialog("System is stopped", "System is stopped")   
+            
+        except OSError as err:
+            self.showDialog("Manager User Interface for acquisition",err)
+    
+    def setEnabled_widgets(self, bool):
+        self.ui.edtIntegration.setEnabled(bool)
+        self.ui.cmbAcquisition.setEnabled(bool)
+        self.ui.doubleSpinBox_lblTemp.setEnabled(bool)
         
+    def checkPlot(self):
+        if (not(self.ui.chkAuto.isChecked())): # But, it does not want to search peak automatically
+                self.plotAutomaticLineOnGraph(plot=False) #Stop plotting
+                
     def searchPeaks_single(self):
         if (not(self.ui.chkAuto.isChecked())): # But, it does not want to search peak automatically
                 self.plotAutomaticLineOnGraph(plot=False) #Stop plotting
@@ -247,8 +286,6 @@ class PressureSystem(object):
         else:
             ''' Save data for modeling'''
             # self.saveData(gpa_real = -1) 
-            
-            
             self.setRealPressure(flag=False, gpa_real= 0) #Pause motor 
             self.ui.lcdPressure.display('-1') 
             self.plotAutomaticLineOnGraph(plot=False) #Stop plotting
@@ -468,7 +505,8 @@ class PressureSystem(object):
     def plotRealTimeLineDesired(self):
         wave_on_2peak = self.ui.PyDMLabel_2nm_result.text() 
         if (wave_on_2peak  == 'Error'):
-            self.plotCalcPosition(wl_ = 0) 
+            #self.plotCalcPosition(wl_ = 0) 
+            self.plotLine_nm_OnGraph(w_l = 0,_label='SetPoint',plot = False, _angle = 90)
         else:
             idx_name = wave_on_2peak.find('n')
             if idx_name > 0:
