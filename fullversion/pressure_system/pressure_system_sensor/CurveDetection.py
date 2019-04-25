@@ -410,9 +410,9 @@ def mult_params_peaks_Lorentzian(x,y):
          
 if __name__ == '__main__':
     pass
-    PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/3test/GearBox/goldenPressure/subidarubi/'
+    #PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/3test/GearBox/goldenPressure/subidarubi/'
     #PATH ='/home/ABTLUS/rodrigo.guercio/Downloads/'
-    #PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/barbara/'
+    PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/barbara/'
     #PATH = '/home/ABTLUS/rodrigo.guercio/Pictures/Ruby_kousik/'
     #name = 'au_002_21p85_GPa_d_n016.txt'
     #name = 'au_002_6p36_GPa_d_n000.txt'

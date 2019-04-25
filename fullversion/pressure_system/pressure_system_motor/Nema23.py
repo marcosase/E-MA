@@ -57,9 +57,8 @@ class Nema23(QThread):
             
     def move_RevOnM4(self):
         try:
-            revs = self.revs_approx()
-            print("Number of steps",revs,revs*256*200)
-            self.settings_position(revs) #  revs Raw values - I need to check if the motor will start 
+            print("Number of steps in microns of M4 bolt",self.microns_onM4,revs*16)
+            self.settings_position(self.microns_onM4 ) #  revs Raw values - I need to check if the motor will start 
             self.move()
             self.motorNema.wait()
             self.motion.emit(True) #emit a signal of finished
@@ -72,7 +71,7 @@ class Nema23(QThread):
     def revs_approx(self):
         ''' revs_onM4 is linked to how many revolutions the bolt will be rev'''
         #Steady time on motor
-        revs_total = self.revs_onM4  #self.revs_onM4*self.efficiency #revs
+        revs_total = self.microns_onM4 #self.revs_onM4*self.efficiency #revs
         
         return revs_total
     
@@ -134,19 +133,15 @@ class Nema23(QThread):
             print ("Error %s" % str(e))
             return False
         
-    def settings_motion(self,desired_dir = 0,time_accl = 1,desired_rps = 1.0,gearbox_reduce = 1, efficiency_ = 1,revs_onM4 = 0.1):
+    def settings_motion(self,desired_dir = 0,desired_rps = 1.0,microns_onM4 = 0.1):
         #SREV -> VDE SMAX -> VDE BVEL -> VDE
         try:
             delay = self.motorNema.motor.get('DLY')
             #There is no motion
             self.settings_direction(desired_dir)  
             self.wait(delay)
-            self.settings_accl(time_accl) #seconds
-            self.wait(delay)
             self.settings_rps(desired_rps) #rps
-            self.gearbox_reduce = gearbox_reduce
-            self.efficiency = efficiency_
-            self.revs_onM4 = revs_onM4 #revs
+            self.microns_onM4 = microns_onM4 #steps-microns on M4 Bolt
             return True
                 
         except Exception as e:
@@ -156,7 +151,7 @@ class Nema23(QThread):
     
     def settings_position(self,desired_rval):
         
-        real = self.motorNema.getDialRealPosition() #unit: revolution(rev) #self.motorNema.getDialPosition()
+        real = self.motorNema.getDialRealPosition() #Unit in microns
         self.motorNema.setDialPosition( pos = (desired_rval + real), waitComplete = False)
             
     def settings_direction(self,desired_dir):   

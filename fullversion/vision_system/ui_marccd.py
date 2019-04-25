@@ -362,7 +362,6 @@ class msg(IntEnum):
     
     
 if __name__ == "__main__":  
-    import sys
     app = PyDMApplication(use_main_window=False)
     Ui_MainWindow_marccd = QtWidgets.QMainWindow()
     ui = ui_marccd()

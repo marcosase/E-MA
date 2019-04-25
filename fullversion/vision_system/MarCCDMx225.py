@@ -95,7 +95,7 @@ class MarCCDMx225(QThread):
         self.local = self.pathHomeUser + prefix
         
         
-    def run(self):
+    def run2(self):
         
         try:
             self.camera.setImageSize(width = self.pix_size, height = self.pix_size) #Binning effect
@@ -136,9 +136,51 @@ class MarCCDMx225(QThread):
             print ("Error %s" % str(e))
             self.camera.close()
             self.signal.emit('False') 
-              
+    
+    def run(self):
+        
+        try:
+            self.camera.setImageSize(width = self.pix_size, height = self.pix_size) #Binning effect
+            print('self.count_number',self.count_number)
+            print('self.exposure:',self.exposure)
+            exp_time = self.exposure/self.count_number
+            self.camera.setCountTime(exp_time) #Sets the image acquisition time.
+            self.terminated.emit(0)
+            if self.count_number > 1:
+                self.camera.darkNoise() #Prepares a dark noise image to be used as a correction image by the server.
+                self.camera.setSubScan(count=2) #Configure the MarCCD object to know that each acquisition will be done in multiple steps.
+                for i in range(0,self.count_number): 
+                    self.camera.startCount() #Starts acquiring an image.
+                    self.camera.wait() #Blocks until the configured count time passes 
+                    self.camera.stopCount() #Stops acquiring the image and stores it into server memory.
+                    self.camera.waitForIdle() #Blocks until the camera server is completely idle.
+                    if i > 0:
+                        #Final image processing aiming a single image    
+                        self.camera.dezinger() #Apply the dezinger correction algorithm in 2 images and store the resulting image in the MarCCD server.
+                        self.camera.correct() #Queues image correction on the MarCCD server. After the image is corrected, it can be saved to a file.
+                    #Management of threads - > Got one image again
+                    self.terminated.emit(i+1)
+            else:
+                self.camera.startCount() #Starts acquiring an image.
+                self.camera.wait() #Blocks until the configured count time passes 
+                self.camera.stopCount() #Stops acquiring the image and stores it into server memory.
+                
+            
+            self.camera.writeImage(self.remote)  #Write the image stored in MarCCD server memory in a file. the MarCCD camera server to store the image in a remote location
+            saved = self._move(self.prefix)
+
+            if saved:
+                self.signal.emit(self.local)
+            else:
+                self.signal.emit('False')    
+            
+        except Exception as e:
+            print ("Unexpected error (RUN):", sys.exc_info()[0])
+            print ("Error %s" % str(e))
+            self.camera.close()
+            self.signal.emit('False')           
                         
-    def run2(self):
+    def run3(self):
 
         try:  
             self.camera.setImageSize(width = self.pix_size, height = self.pix_size) #Binning effect

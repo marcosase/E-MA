@@ -108,8 +108,8 @@ class PressureSystem(object):
         self.SensorOcean.error_message.connect(self.errorMessage) 
         
         #Connect the most important signal (Acquire spectrogram)
-        self.ui.btnAcquire.released.connect(self.managerUserInterfaceforacquisition)
-        
+        self.ui.btnAcquire.released.connect(self.managerUserInterfaceforacquisition_start)
+        self.ui.btnAcquireStop.released.connect(self.managerUserInterfaceforacquisition_stop)
     
         #It does not break the program
         self.line = InfiniteLine()
@@ -159,6 +159,7 @@ class PressureSystem(object):
         self.ui.chkDark.channel = urlname + ':ElectricalDark'
         self.ui.chkTrigger.channel = urlname + ':ExternalTrigger'
         self.ui.btnAcquire.channel = urlname + ':Acquire'
+        self.ui.chkDark.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0.117949 rgba(60,60, 60, 255), stop:0.225641 rgba(60, 60, 60, 255));")
         
         for i in range(1, MAXROIS):
             lower = getattr(self.ui, 'leLower'+str(i))
@@ -640,7 +641,7 @@ class PressureSystem(object):
         elif not(self.ui.Enable_motor.isChecked()):
             self.ui.msg_error.setText("Go to 'Spectrometer Setting: Sensor' to enable automation")
         else:
-            if self.machine.settings_motion(desired_rps = self.rps, efficiency_= self.eff, revs_onM4 = self.revs_desired):
+            if self.machine.settings_motion(desired_rps = self.rps, microns_onM4 = self.micros_desired):
                 self.machine.start()
                 self.colourYellowCircle() 
             else:
@@ -686,8 +687,8 @@ class PressureSystem(object):
     
     def getparams(self):
         try:
-            self.rps = self.ui.dSB_s.value()#self.dr = float(self.ui.lineEdit_rps.text())
-            self.eff = self.ui.dSB_eff.value()#self.ef = float(self.ui.lineEdit_eff.text())
+            self.rps = self.ui.dSB_s.value()# microns
+            self.eff = self.ui.dSB_eff.value()# microns / GPa
             return self.revsSetup() #Setting number of revolutions 
         except Exception as e:
             print ("Unexpected error -- getparams --:", sys.exc_info()[0])
@@ -710,7 +711,7 @@ class PressureSystem(object):
                 return False
             elif (self.SensorOcean.ocean.pvAcMode.get() == 1): #Real time is happening
                 self.gpa_desired = self.ui.dSB_gpa.value()
-                self.revs_desired = self.revsEstimationAndGo(self.gpa_desired, self.graphdata.press2) #self.revs_desired = self.revsEstimationAndGo(self.gpa_desired, 0)
+                self.micros_desired = self.micronsEstimationAndGo(self.gpa_desired, self.graphdata.press2) # microns
                 self.automoveFlag = True
                 return True
             else:
@@ -719,8 +720,10 @@ class PressureSystem(object):
                 return False
             
         elif self.ui.checkBox_degrees.isChecked() and not(self.ui.checkBox_Gpa.isChecked()):
-            ''' Manual pressure adjustment ''' 
-            self.revs_desired = self.ui.dSB_graus.value()/1 #Fuso igual to 0.5 mm
+            ''' Manual pressure adjustment
+            Bolt -> 500 um - Reduction -> 8000 - 16000 revs of motor to change 1mm on bolt system
+            '''
+            self.micros_desired = self.ui.dSB_graus.value()# microns
             self.automoveFlag = False
             return True
         else:
@@ -730,11 +733,10 @@ class PressureSystem(object):
             
         
     
-    def revsEstimationAndGo(self,gpa__desired, gpa__real):
-        kp = 10
+    def micronsEstimationAndGo(self,gpa__desired, gpa__real):
         if (gpa__real >= 0 and gpa__desired > gpa__real):
-            revs = (gpa__desired - gpa__real)*self.eff*kp #Delta GPA * REV/GPA
-            return revs
+            microns = (gpa__desired - gpa__real)*self.eff #Delta GPA * REV/GPA
+            return microns
         else:
             self.ui.msg_error.setText('Real pressure is negative :(')
             return 0
@@ -748,7 +750,7 @@ class PressureSystem(object):
                         self.pauseMotor_automatic() #System Pause
                         self.colourGreenCircle() #Finished motion! Every thing is ok!
                     elif not(self.machine.isRunning()): #It is the stopped but it is not the desired value! 
-                        self.revs_desired = self.revsEstimationAndGo(self.gpa_desired, gpa_real) #New estimation 
+                        self.micros_desired = self.micronsEstimationAndGo(self.gpa_desired, gpa_real) #New estimation 
                         self.startMotor() #Go
                     else: #No pause by User and the motor is running;
                         self.colourBlueCircle(gpa_real) #It is running
@@ -789,12 +791,12 @@ class PressureSystem(object):
     
 
     def checkNiceRange(self, gpa_desired, gpa_real):
-        ''' See and check if pressure real value is closed to disired value of pressure '''
+        ''' See and check if pressure real value is closed to desired value of pressure '''
         
         if gpa_desired >= gpa_real:
             if gpa_desired <= 0:
                 gpa_desired = 0.01
-            if (gpa_real/gpa_desired >= 0.98):
+            if (gpa_real/gpa_desired >= 1.0):
                 return True
             else:  
                 return False

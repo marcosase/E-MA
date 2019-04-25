@@ -86,7 +86,7 @@ class MainController(object):
         ''' Changed by rmguercio '''
         self.widget.calibration_mode_btn.setText('Capture image calibration')
         self.widget.mask_mode_btn.setText('Mask image calibration')
-        self.widget.integration_mode_btn.setText('Capture image sample')
+        self.widget.integration_mode_btn.setText('Integrate image sample')
         self.widget.setMinimumSize(1024,768)
         #self.widget.maximumSize()
         self._create_windows() #R Guercio
@@ -170,8 +170,8 @@ class MainController(object):
     def _create_signals(self):
         'Signals to new windows on pyqt5'  
         self.widgetflag = 0  
-        self.widget.mode_btn_group.buttonClicked.connect(self.tab_changed_rmg)
-        self.integration_controller.widget.qa_save_img_btn.clicked.connect(self.tab_changed_rmg) #toggled.connect(self.tab_changed_rmg)
+        self.widget.mode_btn_group.buttonClicked.connect(self.tab_changed_rmg_v1)
+        self.integration_controller.widget.qa_save_img_btn.clicked.connect(self.tab_changed_rmg_v2) #toggled.connect(self.tab_changed_rmg)
         self.integration_controller.widget.qa_save_img_btn.setText('Capture image sample')
         ''' Signals: Ask if the user wants to capture! '''
         #CALIBRATION and INTEGRATION
@@ -227,19 +227,35 @@ class MainController(object):
         else:
             print('ERROR  => RODRIGO')
             
-    def tab_changed_rmg(self):
+    def tab_changed_rmg_v1(self):
     
         if self.window_askmarccd.isVisible():
             self.window_askmarccd.close()
         
         if self.widget.calibration_mode_btn.isChecked():
             self.widgetflag = 0
-            self.window_askmarccd.show()
+            self.window_askmarccd.show() #Do you want calibration?
         elif self.widget.mask_mode_btn.isChecked():
             self.widgetflag = 1
         elif self.widget.integration_mode_btn.isChecked():
             self.widgetflag = 2
-            self.window_askmarccd.show() #Integration
+            #self.window_askmarccd.show() #Don't show anymore - Integration
+        else:
+            print("Hi")  
+            
+    def tab_changed_rmg_v2(self):
+    
+        if self.window_askmarccd.isVisible():
+            self.window_askmarccd.close()
+        
+        if self.widget.calibration_mode_btn.isChecked():
+            self.widgetflag = 0
+            self.window_askmarccd.show() #Do you want calibration?
+        elif self.widget.mask_mode_btn.isChecked():
+            self.widgetflag = 1
+        elif self.widget.integration_mode_btn.isChecked():
+            self.widgetflag = 2
+            self.window_askmarccd.show() #Don't show anymore - Integration
         else:
             print("Hi")  
    
