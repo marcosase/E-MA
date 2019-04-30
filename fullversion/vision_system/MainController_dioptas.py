@@ -56,7 +56,16 @@ class MainController(object):
 
         self.use_settings = use_settings
         self.widget = MainWidget()
-
+        #Changing
+        self.capture_image_sample_btn = QtWidgets.QPushButton('Capture the sample image')
+        self.capture_image_sample_btn.setStyleSheet("color: rgb(0, 255, 255);")
+        self.capture_image_sample_btn.setMaximumSize(QtCore.QSize(190, 600))
+        self.widget.integration_widget.integration_control_widget.img_control_widget._layout.addWidget(self.capture_image_sample_btn)
+        
+        self.capture_image_calibration_btn = QtWidgets.QPushButton('Capture the sample image')
+        self.capture_image_calibration_btn.setStyleSheet("color: rgb(0, 255, 255);")
+        self.capture_image_calibration_btn.setMaximumSize(QtCore.QSize(190, 600))
+        self.widget.calibration_widget.calibration_control_widget._file_layout.addWidget(self.capture_image_calibration_btn)
         # create data
         if settings_directory == 'default':
             self.settings_directory = os.path.join(os.path.expanduser("~"), '.Dioptas')
@@ -84,8 +93,8 @@ class MainController(object):
         )
         
         ''' Changed by rmguercio '''
-        self.widget.calibration_mode_btn.setText('Capture image calibration')
-        self.widget.mask_mode_btn.setText('Mask image calibration')
+        self.widget.calibration_mode_btn.setText('Calibrate standard image')
+        self.widget.mask_mode_btn.setText('Mask the image of sample')
         self.widget.integration_mode_btn.setText('Integrate image sample')
         self.widget.setMinimumSize(1024,768)
         #self.widget.maximumSize()
@@ -170,9 +179,8 @@ class MainController(object):
     def _create_signals(self):
         'Signals to new windows on pyqt5'  
         self.widgetflag = 0  
-        self.widget.mode_btn_group.buttonClicked.connect(self.tab_changed_rmg_v1)
-        self.integration_controller.widget.qa_save_img_btn.clicked.connect(self.tab_changed_rmg_v2) #toggled.connect(self.tab_changed_rmg)
-        self.integration_controller.widget.qa_save_img_btn.setText('Capture image sample')
+        self.capture_image_calibration_btn.clicked.connect(self.tab_changed_rmg_v1)
+        self.capture_image_sample_btn.clicked.connect(self.tab_changed_rmg_v2) #toggled.connect(self.tab_changed_rmg)
         ''' Signals: Ask if the user wants to capture! '''
         #CALIBRATION and INTEGRATION
         self.ui_askmarccd.PyDMPushButton_YES.clicked.connect(self.open_calibInterface)
@@ -211,7 +219,7 @@ class MainController(object):
                 self.ui_marccd.marccd.terminate() ## self.ui_marccd.marccd.finished()
             print('Is the marccd thread is keeping active ? True or False: ',self.ui_marccd.marccd.isRunning())
             print('Is the display thread is keeping active ? True or False: ',self.ui_marccd.timeleft.isRunning())
-            self.window_marccd.close()
+            #self.window_marccd.close()
     
     def open_calibInterface(self): 
         
@@ -227,6 +235,11 @@ class MainController(object):
         else:
             print('ERROR  => RODRIGO')
             
+            
+    def open_interfaceTocaptureImage(self):
+        self.open_calibInterface()
+        
+        
     def tab_changed_rmg_v1(self):
     
         if self.window_askmarccd.isVisible():
@@ -234,12 +247,14 @@ class MainController(object):
         
         if self.widget.calibration_mode_btn.isChecked():
             self.widgetflag = 0
-            self.window_askmarccd.show() #Do you want calibration?
+            #self.window_askmarccd.show() #Do you want calibration?
+            self.open_calibInterface()
         elif self.widget.mask_mode_btn.isChecked():
             self.widgetflag = 1
         elif self.widget.integration_mode_btn.isChecked():
             self.widgetflag = 2
             #self.window_askmarccd.show() #Don't show anymore - Integration
+            self.open_calibInterface()
         else:
             print("Hi")  
             
@@ -250,12 +265,14 @@ class MainController(object):
         
         if self.widget.calibration_mode_btn.isChecked():
             self.widgetflag = 0
-            self.window_askmarccd.show() #Do you want calibration?
+            #self.window_askmarccd.show() #Do you want calibration?
+            self.open_calibInterface()
         elif self.widget.mask_mode_btn.isChecked():
             self.widgetflag = 1
         elif self.widget.integration_mode_btn.isChecked():
             self.widgetflag = 2
-            self.window_askmarccd.show() #Don't show anymore - Integration
+            #self.window_askmarccd.show() #Don't show anymore - Integration
+            self.open_calibInterface()
         else:
             print("Hi")  
    
@@ -283,13 +300,13 @@ class MainController(object):
         old_hist_levels = None
         if old_index == 0:  # calibration tab
             old_view_range = self.widget.calibration_widget.img_widget.img_view_box.targetRange()
-            old_hist_levels = self.widget.calibration_widget.img_widget.img_histogram_LUT.getExpLevels()
+            old_hist_levels = self.widget.calibration_widget.img_widget.img_histogram_LUT_horizontal.getExpLevels()
         elif old_index == 1:  # mask tab
             old_view_range = self.widget.mask_widget.img_widget.img_view_box.targetRange()
-            old_hist_levels = self.widget.mask_widget.img_widget.img_histogram_LUT.getExpLevels()
+            old_hist_levels = self.widget.mask_widget.img_widget.img_histogram_LUT_horizontal.getExpLevels()
         elif old_index == 2:
             old_view_range = self.widget.integration_widget.img_widget.img_view_box.targetRange()
-            old_hist_levels = self.widget.integration_widget.img_widget.img_histogram_LUT.getExpLevels()
+            old_hist_levels = self.widget.integration_widget.img_widget.img_histogram_LUT_horizontal.getExpLevels()
 
         # update the GUI
         if ind == 2:  # integration tab
@@ -298,7 +315,7 @@ class MainController(object):
             self.integration_controller.widget.calibration_lbl.setText(self.model.calibration_model.calibration_name)
             self.integration_controller.image_controller._auto_scale = False
 
-            if self.integration_controller.image_controller.img_mode == "Image":
+            if self.widget.integration_widget.img_mode == "Image":
                 self.integration_controller.image_controller.plot_img()
 
             if self.model.use_mask:
@@ -308,12 +325,13 @@ class MainController(object):
             else:
                 self.model.pattern_changed.emit()
             self.widget.integration_widget.img_widget.set_range(x_range=old_view_range[0], y_range=old_view_range[1])
-            self.widget.integration_widget.img_widget.img_histogram_LUT.setLevels(*old_hist_levels)
+            self.widget.integration_widget.img_widget.img_histogram_LUT_horizontal.setLevels(*old_hist_levels)
+            self.widget.integration_widget.img_widget.img_histogram_LUT_vertical.setLevels(*old_hist_levels)
         elif ind == 1:  # mask tab
             self.mask_controller.plot_mask()
             self.mask_controller.plot_image()
             self.widget.mask_widget.img_widget.set_range(x_range=old_view_range[0], y_range=old_view_range[1])
-            self.widget.mask_widget.img_widget.img_histogram_LUT.setLevels(*old_hist_levels)
+            self.widget.mask_widget.img_widget.img_histogram_LUT_vertical.setLevels(*old_hist_levels)
         elif ind == 0:  # calibration tab
             self.calibration_controller.plot_mask()
             try:
@@ -321,7 +339,7 @@ class MainController(object):
             except (TypeError, AttributeError):
                 pass
             self.widget.calibration_widget.img_widget.set_range(x_range=old_view_range[0], y_range=old_view_range[1])
-            self.widget.calibration_widget.img_widget.img_histogram_LUT.setLevels(*old_hist_levels)
+            self.widget.calibration_widget.img_widget.img_histogram_LUT_vertical.setLevels(*old_hist_levels)
 
     def update_title(self):
         """
@@ -333,8 +351,8 @@ class MainController(object):
         calibration_name = self.model.calibration_model.calibration_name
         str = 'Dioptas ' + __version__
         if img_filename is '' and pattern_filename is '':
-            self.widget.setWindowTitle(str + u' - © 2017 C. Prescher modified by 2018 Guercio R')
-            self.widget.integration_widget.img_frame.setWindowTitle(str + u' - © 2017 C. Prescher modified by 2018 Guercio R')
+            self.widget.setWindowTitle(str + u' - © 2019 C. Prescher modified by 2018 Guercio R')
+            self.widget.integration_widget.img_frame.setWindowTitle(str + u' - © 2019 C. Prescher')
             return
 
         if img_filename is not '' or pattern_filename is not '':
@@ -348,7 +366,7 @@ class MainController(object):
         if calibration_name is not None:
             str += ', calibration: ' + calibration_name
         str += ']'
-        str += u' - © 2017 C. Prescher modified by Guercio R 2018'
+        str += u' - © 2019 C. Prescher'
         self.widget.setWindowTitle(str)
         self.widget.integration_widget.img_frame.setWindowTitle(str)
 
@@ -399,7 +417,6 @@ class MainController(object):
         if self.use_settings:
             self.save_default_settings()
             self.save_directories()
-        ''' Changed by rmguercio '''
         #QtWidgets.QApplication.closeAllWindows()
         ev.accept()
 
@@ -427,6 +444,13 @@ class MainController(object):
             self.model.working_directories['project'] = os.path.dirname(filename)
 
     def reset_btn_clicked(self):
+        if QtWidgets.QMessageBox.Yes == \
+                QtWidgets.QMessageBox.question(self.widget,
+                                               'Resetting Dioptas.',
+                                               'Do you really want to reset Dioptas?\nAll unsaved work will be lost!',
+                                               QtWidgets.QMessageBox.Yes,
+                                               QtWidgets.QMessageBox.No):
+            self.model.reset()
         if QtWidgets.QMessageBox.Yes == \
                 QtWidgets.QMessageBox.question(self.widget,
                                                'Resetting Dioptas.',

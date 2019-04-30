@@ -88,7 +88,7 @@ class ui_marccd(object):
                 if (self.marccd.isRunning()):
                     self.marccd.terminate()
                 else:
-                    self.marccd.args(exposure = self.exposure, count_number = self.count, prefix = self.fileName, pathHomeUser = self.pathHome, pix_size = self.pixelsize)
+                    self.marccd.args(exposure = self.exposure, count_number = self.count, prefix = self.fileName, pathHomeUser = self.pathHome, pix_size = self.pixelsize, cumulative=self.numImage)
                     self.marccd.start()
                 ''' Starting clock - timeleft'''
                 if (self.timeleft.isRunning()):
@@ -102,7 +102,7 @@ class ui_marccd(object):
                 return False #SingleCrystal          
     
     def imagenumbercapture(self,numOfImages):
-        self.msg_label = str(numOfImages) + ' of ' + str(self.count) + ' images were captured...'
+        self.msg_label = str(numOfImages) + ' of ' + str(self.count*self.numImage) + ' images were captured...'
         self.ui.PyDMLabel_msgerror.setText(self.msg_label)
         if numOfImages >= self.count:
             self.timeleft.terminate()
@@ -151,8 +151,9 @@ class ui_marccd(object):
             return True
         
     def getExposureAndCount(self):
-        self.exposure = int(self.ui.lineEdit_Exposureone.value()) #int(self.ui.lineEdit_Exposureone.text())
+        self.exposure = self.ui.lineEdit_Exposureone.value() #float
         self.count = self.ui.lineEdit_count.value()#int(self.ui.lineEdit_count.text())
+        self.numImage = self.ui.spinBox_cumulative.value()
         if ((self.exposure < 1) or (self.count < 1)):
             self.display_msg(msg.nonegative)
             return False

@@ -11,6 +11,7 @@ from pydm import PyDMApplication
 from PyQt5.QtWidgets import QMessageBox
 
 
+
 class EmaApp (object):
     def __init__(self): 
         '''Open initial interface of E-Manager Application '''       

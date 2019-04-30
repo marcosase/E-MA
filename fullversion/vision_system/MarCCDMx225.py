@@ -12,7 +12,8 @@ from ftplib import FTP
 import os, sys
 from PyQt5.QtCore import pyqtSignal,QThread
 from builtins import str
-
+from future.backports.test.pystone import FALSE
+import imageio
 
 class MarCCDMx225(QThread):
     '''
@@ -40,14 +41,14 @@ class MarCCDMx225(QThread):
         
     def check_status(self):
         try:
-            ans = self.camera.getState(60)
+            ans = self.camera.getState(20)
             print('Status of camera: ', ans)
             if (ans == 0):
                 return True
             else:
                 self.camera.close()
                 self.camera = MarCCD(self.name, (self.host, self.port)) #'192.168.1.10', port
-                ans = self.camera.getState(60)
+                ans = self.camera.getState(20)
                 print('Status of camera: ', ans)
                 if (ans == 0):
                     return True
@@ -67,7 +68,14 @@ class MarCCDMx225(QThread):
         except:
             return False
             
-    def _move(self,file):
+    def _move(self,filename):
+        
+        self._ftp(filename)  
+        move(filename, self.pathHomeUser + filename)
+        
+        return os.path.exists(self.pathHomeUser + filename)   
+    
+    def _ftp(self,filename):    
         #Delete remote
         ftp = FTP('')
         ftp.connect(self.host,1026)
@@ -75,21 +83,38 @@ class MarCCDMx225(QThread):
         ftp.cwd('') #replace with your directory
         ftp.retrlines('LIST')
         
-        filename = file #replace with your file in the directory ('directory_name')
+        #filename = file #replace with your file in the directory ('directory_name')
         localfile = open(filename, 'wb')
         ftp.retrbinary('RETR ' + filename, localfile.write, 8192)
         ftp.quit()
-        localfile.close()
+        localfile.close()   
+        
+    def _accumulate(self,filename):
+        accumulate = 0
+        for k in range(0,self.numOfimages):
+            file = 'acclt' + str(k) + filename
+            self.remote = self.pathMarCCD + file
+            self.captureImage(k)
+            self._ftp(file)
+            if not (os.path.exists(file)):
+                return False
+            else:
+                image = imageio.imread(file)
+                accumulate = accumulate + image
+                move(filename, self.pathHomeUser + file)
+        
+        pathFileAcclt = self.pathHomeUser + filename
+        imageio.imwrite(uri = pathFileAcclt, im = accumulate)
+        return os.path.exists(pathFileAcclt) 
             
-        move(filename, self.pathHomeUser + filename)
-        return os.path.exists(self.pathHomeUser + filename)          
     
-    def args (self, exposure = 10, count_number = 10, prefix = 'data.tiff',pathHomeUser = '', pix_size = 1024):
+    def args (self, exposure = 10, count_number = 10, prefix = 'data.tiff',pathHomeUser = '', pix_size = 1024, cumulative = 1):
         self.pathHomeUser = pathHomeUser #'/home/ABTLUS/rodrigo.guercio/Documents/MarCCD - Computer files/'
         self.pathMarCCD = '/home/marccd/XDS/2018/ftp_files/'
         self.pix_size = pix_size
         self.exposure = exposure
         self.count_number = count_number
+        self.numOfimages = cumulative
         self.prefix = prefix
         self.remote = self.pathMarCCD + prefix
         self.local = self.pathHomeUser + prefix
@@ -140,34 +165,13 @@ class MarCCDMx225(QThread):
     def run(self):
         
         try:
-            self.camera.setImageSize(width = self.pix_size, height = self.pix_size) #Binning effect
-            print('self.count_number',self.count_number)
-            print('self.exposure:',self.exposure)
-            exp_time = self.exposure/self.count_number
-            self.camera.setCountTime(exp_time) #Sets the image acquisition time.
-            self.terminated.emit(0)
-            if self.count_number > 1:
-                self.camera.darkNoise() #Prepares a dark noise image to be used as a correction image by the server.
-                self.camera.setSubScan(count=2) #Configure the MarCCD object to know that each acquisition will be done in multiple steps.
-                for i in range(0,self.count_number): 
-                    self.camera.startCount() #Starts acquiring an image.
-                    self.camera.wait() #Blocks until the configured count time passes 
-                    self.camera.stopCount() #Stops acquiring the image and stores it into server memory.
-                    self.camera.waitForIdle() #Blocks until the camera server is completely idle.
-                    if i > 0:
-                        #Final image processing aiming a single image    
-                        self.camera.dezinger() #Apply the dezinger correction algorithm in 2 images and store the resulting image in the MarCCD server.
-                        self.camera.correct() #Queues image correction on the MarCCD server. After the image is corrected, it can be saved to a file.
-                    #Management of threads - > Got one image again
-                    self.terminated.emit(i+1)
-            else:
-                self.camera.startCount() #Starts acquiring an image.
-                self.camera.wait() #Blocks until the configured count time passes 
-                self.camera.stopCount() #Stops acquiring the image and stores it into server memory.
-                
             
-            self.camera.writeImage(self.remote)  #Write the image stored in MarCCD server memory in a file. the MarCCD camera server to store the image in a remote location
-            saved = self._move(self.prefix)
+            if self.numOfimages > 1:
+                #It is necessary to save image in other place
+                saved = self._accumulate(self.prefix)
+            else:
+                self.captureImage(1)
+                saved = self._move(self.prefix)
 
             if saved:
                 self.signal.emit(self.local)
@@ -178,7 +182,33 @@ class MarCCDMx225(QThread):
             print ("Unexpected error (RUN):", sys.exc_info()[0])
             print ("Error %s" % str(e))
             self.camera.close()
-            self.signal.emit('False')           
+            self.signal.emit('False')      
+            
+    def captureImage(self,j):
+        self.camera.setImageSize(width = self.pix_size, height = self.pix_size) #Binning effect
+        exp_time = self.exposure/self.count_number
+        self.camera.setCountTime(exp_time) #Sets the image acquisition time.
+        self.terminated.emit(0)
+        if self.count_number > 1:
+            self.camera.darkNoise() #Prepares a dark noise image to be used as a correction image by the server.
+            self.camera.setSubScan(count=2) #Configure the MarCCD object to know that each acquisition will be done in multiple steps.
+            for i in range(0,self.count_number): 
+                self.camera.startCount() #Starts acquiring an image.
+                self.camera.wait() #Blocks until the configured count time passes 
+                self.camera.stopCount() #Stops acquiring the image and stores it into server memory.
+                self.camera.waitForIdle() #Blocks until the camera server is completely idle.
+                if i > 0:
+                    #Final image processing aiming a single image    
+                    self.camera.dezinger() #Apply the dezinger correction algorithm in 2 images and store the resulting image in the MarCCD server.
+                    self.camera.correct() #Queues image correction on the MarCCD server. After the image is corrected, it can be saved to a file.
+                #Management of threads - > Got one image again
+                self.terminated.emit(i+j)
+        else:
+            self.camera.startCount() #Starts acquiring an image.
+            self.camera.wait() #Blocks until the configured count time passes 
+            self.camera.stopCount() #Stops acquiring the image and stores it into server memory.
+            
+        self.camera.writeImage(self.remote)  #Write the image stored in MarCCD server memory in a file. the MarCCD camera server to store the image in a remote location
                         
     def run3(self):
 
