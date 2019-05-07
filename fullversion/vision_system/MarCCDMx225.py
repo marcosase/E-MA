@@ -92,16 +92,16 @@ class MarCCDMx225(QThread):
     def _accumulate(self,filename):
         accumulate = 0
         for k in range(0,self.numOfimages):
-            file = 'acclt' + str(k) + filename
+            file = '_' + str(k) + '_' + filename
             self.remote = self.pathMarCCD + file
-            self.captureImage(k)
+            self.captureImage(self.count_number*k+1)
             self._ftp(file)
             if not (os.path.exists(file)):
                 return False
             else:
                 image = imageio.imread(file)
                 accumulate = accumulate + image
-                move(filename, self.pathHomeUser + file)
+                move(file, self.pathHomeUser + file)
         
         pathFileAcclt = self.pathHomeUser + filename
         imageio.imwrite(uri = pathFileAcclt, im = accumulate)
@@ -111,6 +111,7 @@ class MarCCDMx225(QThread):
     def args (self, exposure = 10, count_number = 10, prefix = 'data.tiff',pathHomeUser = '', pix_size = 1024, cumulative = 1):
         self.pathHomeUser = pathHomeUser #'/home/ABTLUS/rodrigo.guercio/Documents/MarCCD - Computer files/'
         self.pathMarCCD = '/home/marccd/XDS/2018/ftp_files/'
+        self.pathMarCCD = '/home/marccd/XDS_teste/ftp-pack/images_from_marccd/'
         self.pix_size = pix_size
         self.exposure = exposure
         self.count_number = count_number
@@ -165,7 +166,7 @@ class MarCCDMx225(QThread):
     def run(self):
         
         try:
-            
+            self.terminated.emit(0)
             if self.numOfimages > 1:
                 #It is necessary to save image in other place
                 saved = self._accumulate(self.prefix)
@@ -188,7 +189,6 @@ class MarCCDMx225(QThread):
         self.camera.setImageSize(width = self.pix_size, height = self.pix_size) #Binning effect
         exp_time = self.exposure/self.count_number
         self.camera.setCountTime(exp_time) #Sets the image acquisition time.
-        self.terminated.emit(0)
         if self.count_number > 1:
             self.camera.darkNoise() #Prepares a dark noise image to be used as a correction image by the server.
             self.camera.setSubScan(count=2) #Configure the MarCCD object to know that each acquisition will be done in multiple steps.
@@ -345,10 +345,10 @@ class DisplayTime(QThread):
         self.steptime = step_time
     def run(self):
         try:
-            time_sum = -5 #Five seconds of delay
+            time_sum = -2 #Two seconds of delay
             while(self.targettime > time_sum):
                 QThread.sleep(self.steptime)
-                time_sum = time_sum + 0.9*self.steptime
+                time_sum = time_sum + 0.5*self.steptime
                 timeL = int(100*(time_sum/self.targettime))
                 if timeL > 0 and timeL < 100:
                     self.timeleft.emit(timeL)

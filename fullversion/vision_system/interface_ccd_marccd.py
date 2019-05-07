@@ -345,7 +345,7 @@ class Ui_Ui_MainWindow_marccd(object):
 
     def retranslateUi(self, Ui_MainWindow_marccd):
         _translate = QtCore.QCoreApplication.translate
-        Ui_MainWindow_marccd.setWindowTitle(_translate("Ui_MainWindow_marccd", "MainWindow"))
+        Ui_MainWindow_marccd.setWindowTitle(_translate("Ui_MainWindow_marccd", "X-Ray detector communication"))
         self.PyDMDrawingLine_9.setWhatsThis(_translate("Ui_MainWindow_marccd", "\n"
 "    A widget with a line drawn in it.\n"
 "    This class inherits from PyDMDrawing.\n"

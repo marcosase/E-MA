@@ -1,9 +1,9 @@
 eclipse.preferences.version=1
+encoding//main/interface_PVnames.py=utf-8
 encoding//main/interface_i.py=utf-8
 encoding//pressure_system/interface_oceanoptics_10.py=utf-8
 encoding//pressure_system/interface_oceanoptics_5.py=utf-8
 encoding//pressure_system/pressure_system_motor/interface_motor_nochannel.py=utf-8
 encoding//singleCrystal_system/interface_singleCrystalA.py=utf-8
-encoding//singleCrystal_system/motor_kelly.py=utf-8
 encoding//vision_system/interface_askCaptureImage_calib.py=utf-8
 encoding//vision_system/interface_ccd_marccd.py=utf-8

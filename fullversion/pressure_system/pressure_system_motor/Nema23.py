@@ -31,7 +31,8 @@ class Nema23(QThread):
         
         try:
             self.motorNema = Motor(pvName=pvname, mnemonic=mne_)
-            self.resert()
+            #self.resert()
+            self.pause()
             return True
         
         except Exception as e:
@@ -57,7 +58,7 @@ class Nema23(QThread):
             
     def move_RevOnM4(self):
         try:
-            print("Number of steps in microns of M4 bolt",self.microns_onM4,revs*16)
+            print("Number of steps in microns of M4 bolt",self.microns_onM4)
             self.settings_position(self.microns_onM4 ) #  revs Raw values - I need to check if the motor will start 
             self.move()
             self.motorNema.wait()
@@ -151,7 +152,7 @@ class Nema23(QThread):
     
     def settings_position(self,desired_rval):
         
-        real = self.motorNema.getDialRealPosition() #Unit in microns
+        real = self.motorNema.getDialRealPosition() #Unit in micronsp
         self.motorNema.setDialPosition( pos = (desired_rval + real), waitComplete = False)
             
     def settings_direction(self,desired_dir):   

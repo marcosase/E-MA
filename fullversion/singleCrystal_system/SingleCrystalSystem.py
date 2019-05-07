@@ -23,33 +23,35 @@ class SingleCrystalSystem(QThread):
         self.ui = Ui_MainWindow()
     
         
-    def setupUi(self,object = None):
+    def setupUi(self,object = None,name = 'dmc:galil:test:A'):
         '''
         Setup of widgets
         '''
         self.ui.setupUi(object)
-        print(self.ui.QMotor._channel)
-        self.rename_channelPV()
+        self.rename_channelPV(name)
         
     def setFlowControl(self):
-        self.ui.PyDMPushButton_Measure.clicked.connect(self.move) # +/- motor GO
+        #self.ui.PyDMPushButton_Measure.clicked.connect(self.move) # +/- motor GO
         self.ui.PyDMCheckbox_msg.stateChanged.connect(self.endMotion) # FINISH 
         
         self.ui.PyDMSpinbox_aF.valueChanged.connect(self.setMaxLimit) 
         self.ui.PyDMSpinbox_a0.valueChanged.connect(self.setMinLimit)
         
         self.ui.QMotor.PyDMPushButton_rlv_plus.clicked.connect(self.blockDiffractionSystem)
+        self.ui.QMotor.PyDMPushButton_rlv_minus.clicked.connect(self.blockDiffractionSystem)
         self.ui.QMotor.PyDMPushButton_stop.clicked.connect(self.blockDiffractionSystem)
         self.ui.QMotor.PyDMLineEdit_val.editingFinished.connect(self.blockDiffractionSystem)
+        
         self.angle_step = 0
-    
-    def rename_channelPV(self, name = 'ca://dmc:galil:test:A'):
+        
+    def rename_channelPV(self, name = 'dmc:galil:test:A'):
         #self.ui.QMotor.setProperty("channel", _translate("MainWindow", "ca://dmc:galil:test:A"))
-        name = 'ca://XDS:DMC6:m7'
+        name = 'ca://' + name
         self.ui.QMotor.channel = name
         self.ui.PyDMSpinbox_a0.channel = name + '.LLM'
         self.ui.PyDMSpinbox_aF.channel = name + '.HLM'
-        self.ui.PyDMCheckbox_msg.channel = name + '.MOVN'
+        self.ui.PyDMCheckbox_msg.channel = name + '.DMOV'
+        #self.ui.PyDMCheckbox_msg.channel = name + '.MOVN'
         
     def blockDiffractionSystem(self):
         self.ui.checkBox_enableMarccd.setChecked(False)
@@ -57,10 +59,10 @@ class SingleCrystalSystem(QThread):
     def endMotion(self,value):
         #Precisa de signal para saber se foi do automatico ou do manual!
         if value == 0:
-            self.ui.PyDMCheckbox_msg.setText('No motion is detected. See Dioptas')
-            self.motorfinished.emit()
+            self.ui.msg.setText('Motor is moving! Wait, please!')
         else:
-            self.ui.PyDMCheckbox_msg.setText('There is a motion. Wait ...')
+            self.ui.msg.setText('You are allowed to capture image!')
+            self.motorfinished.emit()
 
     
     def move_bySystem(self):

@@ -596,6 +596,7 @@ class PressureSystem(object):
         self.moveFlag = True
         self.automoveFlag = False
         self.pauseUser = False
+        self.pauseFeedback = False
         
         
         self.machine = Nema23(pvname = self.motorPVname,mne_=str(int(time.time())))
@@ -654,6 +655,9 @@ class PressureSystem(object):
     
     def pauseMotor_automatic(self): #System Pause
         self.machine.pause()
+    
+    def nofeedback(self):
+        self.pauseFeedback = True
     
     def moveMotor_old(self):
         self.pauseUser = False
@@ -736,6 +740,8 @@ class PressureSystem(object):
     def micronsEstimationAndGo(self,gpa__desired, gpa__real):
         if (gpa__real >= 0 and gpa__desired > gpa__real):
             microns = (gpa__desired - gpa__real)*self.eff #Delta GPA * REV/GPA
+            print('microns')
+            print(microns)
             return microns
         else:
             self.ui.msg_error.setText('Real pressure is negative :(')

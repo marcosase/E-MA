@@ -52,30 +52,42 @@ class EmaApp (object):
         from singleCrystal_system.SingleCrystalSystem import SingleCrystalSystem
         self.Ui_MainWindow_SingleCrystal = QtWidgets.QMainWindow()
         self.ui_singlecrystal = SingleCrystalSystem()
-        self.ui_singlecrystal.setupUi(self.Ui_MainWindow_SingleCrystal)
+        self.ui_singlecrystal.setupUi(object= self.Ui_MainWindow_SingleCrystal, name=self.pvname_motorSingleCrystal)
         self.ui_singlecrystal.setFlowControl()
+        
+        self.signalOfSingleCrystal()
+        
+    def signalOfSingleCrystal(self):
+        ''' Signals of SingleCrystal'''
+        self.ui_singlecrystal.ui.PyDMPushButton_Measure.clicked.connect(self.openMarccd)
         self.ui_singlecrystal.motorfinished.connect(self.singleCrystal_MarccdEventControl)
         ui_Dioptas.ui_marccd.marccd.signal.connect(self.dioptasFinishedTask)
-        ui_Dioptas.ui_marccd.timeleft.timeleft.connect(self.blinkLed)
         self.ui_marccdEnable = False
     
-    def blinkLed(self):
-        self.ui_singlecrystal.ui.PyDMByteIndicator_integrated.channelValueChanged(True)
+    def printA(self):
+        print('hahaha')
+        print(self.ui_singlecrystal.ui.checkBox_enableMarccd.isChecked())
         
+    def openMarccd(self):
+        ui_Dioptas.open_calibInterface()
     
     def singleCrystal_MotorEventControl(self):
-        if self.ui_marccdEnable and self.ui_singlecrystal.ui.checkBox_enableMarccd.isChecked():
-            self.ui_singlecrystal.ui.PyDMByteIndicator_integrated._on_color = 1
-            self.ui_singlecrystal.move()
+        if self.ui_marccdEnable :
+            if self.ui_singlecrystal.ui.checkBox_enableMarccd.isChecked():
+                if(self.ui_singlecrystal.ui.QMotor.PyDMSymbol_lvio.value == 0): #
+                    self.ui_singlecrystal.move()
+                else:
+                    self.ui_singlecrystal.ui.msg.setText('Motion range was violated')
+            else:
+                self.ui_singlecrystal.ui.msg.setText('Check the box to integrate with X-ray detector')
         else:
-            self.ui_singlecrystal.ui.PyDMByteIndicator_integrated._on_color = 0 #channelValueChanged(False)
-    
+            self.ui_singlecrystal.ui.msg.setText('X-Ray detector is not ready')
+            
     def singleCrystal_MarccdEventControl(self):
         if self.ui_singlecrystal.ui.checkBox_enableMarccd.isChecked():
             self.dioptasTakePicturesPlease()
-    
-    def printA(self):
-        print('aaa')
+        else:
+            self.ui_singlecrystal.ui.msg.setText('Check the box to integrate with X-ray detector')
     
     def dioptasTakePicturesPlease(self): 
         flag  = ui_Dioptas.ui_marccd._imagesequence()
@@ -87,11 +99,11 @@ class EmaApp (object):
     def dioptasFinishedTask(self,imagesaved):
         if imagesaved:
             self.ui_marccdEnable = True
-            self.ui_singlecrystal.ui.PyDMCheckbox_msg.setText('A new image was saved! :) ')
+            self.ui_singlecrystal.ui.msg.setText('A new image was saved! :) ')
             self.singleCrystal_MotorEventControl()
         else:
             self.ui_marccdEnable = False
-            self.ui_singlecrystal.ui.PyDMCheckbox_msg.setText('Error: image was not saved! :/')
+            self.ui_singlecrystal.ui.msg.setText('Error: image was not saved! :/')
         
     def setEditPVnames(self):
         ''' Edit PVnames of each system: Settings '''
@@ -175,7 +187,9 @@ class EmaApp (object):
         self.pvname_ocean = self.ui_pvnames.lineEdit_spec.text()
         self.pvname_motorGearBox = self.ui_pvnames.lineEdit_motor.text()
         self.pvname_motorGearBox = 'DMC01:A'
+        #self.pvname_motorGearBox = 'dmc:galil:test:A'
         self.pvname_lakeshore = self.ui_pvnames.lineEdit_LS.text()
+        self.pvname_motorSingleCrystal = 'dmc:galil:test:A'
     
     def acceptedChanges_pvname(self):
         ''' PV names edition '''

@@ -7,9 +7,6 @@ Created on Jun 8, 2018
 There are some notes that are on report of intership 
 
 For example:
-    [1] At Dioptas/Dioptas/tree/develop/dioptas/controller/integration/ImageController.py
-        It was necessary to comment line 169: #self.connect_click_function(self.widget.qa_save_img_btn, self.save_img)
-    [2] Bug of Cosmic Removal
 '''
 # -*- coding: utf8 -*-
 # Dioptas - GUI program for fast processing of 2D X-ray data

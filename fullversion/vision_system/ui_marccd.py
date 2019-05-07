@@ -94,7 +94,7 @@ class ui_marccd(object):
                 if (self.timeleft.isRunning()):
                     self.timeleft.terminate()
                 else:
-                    self.timeleft.args(target_time = self.exposure)
+                    self.timeleft.args(target_time = self.exposure*self.numImage, step_time=self.numImage)
                     self.timeleft.start()    
                 
                 return True #SingleCrystal
@@ -104,7 +104,7 @@ class ui_marccd(object):
     def imagenumbercapture(self,numOfImages):
         self.msg_label = str(numOfImages) + ' of ' + str(self.count*self.numImage) + ' images were captured...'
         self.ui.PyDMLabel_msgerror.setText(self.msg_label)
-        if numOfImages >= self.count:
+        if numOfImages >= self.count*self.numImage:
             self.timeleft.terminate()
     
     def displaytimeleft(self,timeleft):

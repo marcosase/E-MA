@@ -2,6 +2,7 @@ NAME : .NAME
 DESC : .DESC
 STOP : .STOP
 RLV  : .RLV
+EGU  : .EGU
 VAL  : .VAL
 RBV  : .RBV
 SET  : .SET
@@ -40,3 +41,4 @@ LVIO_TOOLTIP : Limit violation
 ATHM_TOOLTIP : At home
 LLS_TOOLTIP  : At low limit switch
 HLS_TOOLTIP  : At high limit switch
+

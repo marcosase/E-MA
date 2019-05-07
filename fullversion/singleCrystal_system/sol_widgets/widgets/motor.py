@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import os
 from qtpy.QtWidgets import QWidget, QDialog, QSizePolicy, QFrame, \
-QGridLayout, QSpacerItem, QLineEdit, QPushButton, QWIDGETSIZE_MAX, QDoubleSpinBox, QLabel
+QGridLayout, QSpacerItem, QLineEdit, QPushButton, QWIDGETSIZE_MAX
 from qtpy.QtGui import QColor, QFont
 from qtpy.QtCore import Qt, QCoreApplication, Property
 from qtpy import uic
 from pydm.widgets.channel import PyDMChannel
 from pydm.widgets import PyDMScaleIndicator, PyDMLabel, PyDMSymbol, \
-PyDMPushButton, PyDMCheckbox, PyDMLineEdit, PyDMSpinbox
+PyDMPushButton, PyDMCheckbox, PyDMLineEdit
 from pydm.utilities import macro
 import yaml
 
@@ -24,7 +24,7 @@ class QMotorSettings(QDialog):
     '''
     def __init__(self, parent, fields_map):
         super(QMotorSettings, self).__init__(parent)
-        self.fields_map= fields_map
+        self.fields_map = fields_map
         self.ui = None
         self.on_edition = False
 
@@ -96,6 +96,8 @@ class QMotor(QWidget):
         self._orientation = Qt.Horizontal
         self._flipped = False
         self._inverted_scale = False
+        self._alarm_sensitive_contents = False
+        self._alarm_sensitive_borders = True
 
         self.setup_widgets()
         self.build_layout(self._orientation, self._flipped, self._inverted_scale)
@@ -105,8 +107,7 @@ class QMotor(QWidget):
         self.show()
         self.repaint()
 
-        #self.lineEdit_rlv.textEdited.connect(self.set_press_values)
-        self.lineEdit_rlv.valueChanged.connect(self.set_press_values)
+        self.lineEdit_rlv.textEdited.connect(self.set_press_values)
         self.pushButton_settings.clicked.connect(self.load_settings_ui)
 
     def init_for_designer(self):
@@ -155,34 +156,20 @@ class QMotor(QWidget):
         self.frame_controls = QFrame()
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.frame_controls.setSizePolicy(sizePolicy)
-        
-        '''
+
         self.lineEdit_rlv = QLineEdit()
         self.lineEdit_rlv.setPlaceholderText('RLV')
         self.lineEdit_rlv.setAlignment(Qt.AlignCenter)
-        '''
-        self.lineEdit_rlv = QDoubleSpinBox()
-        #self.lineEdit_rlv.setPlaceholderText('RLV')
-        self.lineEdit_rlv.setAlignment(Qt.AlignCenter)
-        self.lineEdit_rlv.setEnabled(True)
-        self.lineEdit_rlv.setMinimumSize(2*base_width, base_height)
-        self.lineEdit_rlv.setMinimum(-360.1)
-        self.lineEdit_rlv.setMaximum(360.1)
-        self.lineEdit_rlv.setSingleStep(0.1)
-        
+
         self.PyDMLineEdit_val = PyDMLineEdit()
         self.PyDMLineEdit_val.alarmSensitiveBorder = False
         self.PyDMLineEdit_val.setPlaceholderText('VAL')
         self.PyDMLineEdit_val.setAlignment(Qt.AlignCenter)
 
-        #self.PyDMPushButton_rlv_minus = PyDMPushButton('-')
-        self.PyDMPushButton_rlv_minus = QLabel()
-        self.PyDMPushButton_rlv_minus.setText('Step (°):')
+        self.PyDMPushButton_rlv_minus = PyDMPushButton('-')
         self.PyDMPushButton_rlv_minus.setMinimumSize(base_width, base_height)
-        self.PyDMPushButton_rlv_minus.setEnabled(False)
 
-        #self.PyDMPushButton_rlv_plus = PyDMPushButton('+')
-        self.PyDMPushButton_rlv_plus = PyDMPushButton('Start')
+        self.PyDMPushButton_rlv_plus = PyDMPushButton('+')
         self.PyDMPushButton_rlv_plus.setMinimumSize(base_width, base_height)
 
         self.PyDMCheckbox_set = PyDMCheckbox()
@@ -198,6 +185,10 @@ class QMotor(QWidget):
         self.PyDMLabel_rbv.setText('<RBV>')
         self.PyDMLabel_rbv.setAlignment(Qt.AlignCenter)
         self.PyDMLabel_rbv.setFont(label_font)
+
+        self.PyDMLabel_egu = PyDMLabel()
+        self.PyDMLabel_egu.setText('<EGU>')
+        self.PyDMLabel_egu.setAlignment(Qt.AlignCenter)
 
         self.PyDMSymbol_lvio = PyDMSymbol()
         self.PyDMSymbol_lvio.setMinimumSize(base_height, base_height)
@@ -296,6 +287,7 @@ class QMotor(QWidget):
             self.readback_layout.addWidget(self.PyDMSymbol_lvio, 0, 1)
             self.readback_layout.addItem(self.hspacer_lvio_right, 0, 2)
             self.readback_layout.addWidget(self.PyDMLabel_rbv, 0, 3)
+            self.readback_layout.addWidget(self.PyDMLabel_egu, 1, 3)
             self.readback_layout.addItem(self.hspacer_movn_left, 0, 4)
             self.readback_layout.addWidget(self.PyDMSymbol_movn, 0, 5)
             self.readback_layout.addItem(self.hspacer_movn_right, 0, 6)
@@ -404,17 +396,18 @@ class QMotor(QWidget):
                 self.motor_layout.addItem(self.header_layout, 0,0)
                 self.motor_layout.addWidget(self.frame_controls, 1,0)
                 self.motor_layout.addItem(self.readback_layout, 2,0)
-                self.motor_layout.addItem(self.scale_layout, 1, 1)
+                self.motor_layout.addWidget(self.PyDMLabel_egu, 3, 0)
+                self.motor_layout.addItem(self.scale_layout, 1, 1, 2, 1)
 
                 if inverted == False:
                     self.scale.invertedAppearance = False
                     self.motor_layout.addWidget(self.PyDMLabel_hlm, 0, 1)
-                    self.motor_layout.addWidget(self.PyDMLabel_llm, 2, 1)
+                    self.motor_layout.addWidget(self.PyDMLabel_llm, 3, 1)
                     self.PyDMLabel_llm.setAlignment(Qt.AlignHCenter|Qt.AlignTop)
                     self.PyDMLabel_hlm.setAlignment(Qt.AlignHCenter|Qt.AlignBottom)
                 elif inverted == True:
                     self.scale.invertedAppearance = True
-                    self.motor_layout.addWidget(self.PyDMLabel_hlm, 2, 1)
+                    self.motor_layout.addWidget(self.PyDMLabel_hlm, 3, 1)
                     self.motor_layout.addWidget(self.PyDMLabel_llm, 0, 1)
                     self.PyDMLabel_llm.setAlignment(Qt.AlignHCenter|Qt.AlignBottom)
                     self.PyDMLabel_hlm.setAlignment(Qt.AlignHCenter|Qt.AlignTop)
@@ -424,6 +417,7 @@ class QMotor(QWidget):
                 self.readback_layout.addWidget(self.PyDMSymbol_movn, 0, 1)
                 self.readback_layout.addItem(self.hspacer_movn_right, 0, 2)
                 self.readback_layout.addWidget(self.PyDMLabel_rbv, 0, 3)
+                self.readback_layout.addWidget(self.PyDMLabel_egu, 1, 3)
                 self.readback_layout.addItem(self.hspacer_lvio_left, 0, 4)
                 self.readback_layout.addWidget(self.PyDMSymbol_lvio, 0, 5)
                 self.readback_layout.addItem(self.hspacer_lvio_right, 0, 6)
@@ -447,7 +441,7 @@ class QMotor(QWidget):
                 self.control_layout.addWidget(self.lineEdit_rlv, 1, 1)
                 self.control_layout.addWidget(self.PyDMPushButton_rlv_minus, 2, 1)
 
-                self.motor_layout.addItem(self.scale_layout, 1, 0)
+                self.motor_layout.addItem(self.scale_layout, 1, 0, 2, 1)
                 self.motor_layout.addItem(self.header_layout, 0,1)
                 self.motor_layout.addWidget(self.frame_controls, 1,1)
                 self.motor_layout.addItem(self.readback_layout, 2,1)
@@ -455,12 +449,12 @@ class QMotor(QWidget):
                 if inverted == False:
                     self.scale.invertedAppearance = False
                     self.motor_layout.addWidget(self.PyDMLabel_hlm, 0, 0)
-                    self.motor_layout.addWidget(self.PyDMLabel_llm, 2, 0)
+                    self.motor_layout.addWidget(self.PyDMLabel_llm, 3, 0)
                     self.PyDMLabel_llm.setAlignment(Qt.AlignHCenter|Qt.AlignTop)
                     self.PyDMLabel_hlm.setAlignment(Qt.AlignHCenter|Qt.AlignBottom)
                 elif inverted == True:
                     self.scale.invertedAppearance = True
-                    self.motor_layout.addWidget(self.PyDMLabel_hlm, 2, 0)
+                    self.motor_layout.addWidget(self.PyDMLabel_hlm, 3, 0)
                     self.motor_layout.addWidget(self.PyDMLabel_llm, 0, 0)
                     self.PyDMLabel_llm.setAlignment(Qt.AlignHCenter|Qt.AlignBottom)
                     self.PyDMLabel_hlm.setAlignment(Qt.AlignHCenter|Qt.AlignTop)
@@ -520,13 +514,15 @@ class QMotor(QWidget):
         except:
             pass
 
-    def set_press_values(self):
-        self.PyDMPushButton_rlv_plus.updatePressValue(str(self.lineEdit_rlv.value()))
-        #self.PyDMPushButton_rlv_plus.sendValue()
-    
-    def set_press_values_lais(self, value):
-        self.PyDMPushButton_rlv_minus.pressValue = '-' + str(value)
-        self.PyDMPushButton_rlv_plus.pressValue = str(value)
+    def set_press_values(self, value):
+        try:
+            positive_value = float(value)
+            negative_value = -positive_value
+            self.PyDMPushButton_rlv_minus.pressValue = negative_value
+            self.PyDMPushButton_rlv_plus.pressValue  = positive_value
+        except:
+            self.PyDMPushButton_rlv_minus.pressValue = 0
+            self.PyDMPushButton_rlv_plus.pressValue  = 0
 
     def set_all_channels(self, channel):
         if channel is None:
@@ -534,6 +530,7 @@ class QMotor(QWidget):
         # Monitors
         self.PyDMLabel_desc.channel           = channel + self.fields_map['DESC']
         self.PyDMLabel_rbv.channel            = channel + self.fields_map['RBV']
+        self.PyDMLabel_egu.channel            = channel + self.fields_map['EGU']
         self.PyDMSymbol_lvio.channel          = channel + self.fields_map['LVIO']
         self.PyDMSymbol_movn.channel          = channel + self.fields_map['MOVN']
         self.scale.channel                    = channel + self.fields_map['RBV']
@@ -543,7 +540,7 @@ class QMotor(QWidget):
         self.PyDMLabel_hlm.channel            = channel + self.fields_map['HLM']
         self.PyDMLabel_llm.channel            = channel + self.fields_map['LLM']
         # Controls
-        #self.PyDMPushButton_rlv_minus.channel = channel + self.fields_map['RLV']
+        self.PyDMPushButton_rlv_minus.channel = channel + self.fields_map['RLV']
         self.PyDMPushButton_rlv_plus.channel  = channel + self.fields_map['RLV']
         self.PyDMCheckbox_set.channel         = channel + self.fields_map['SET']
         self.PyDMLineEdit_val.channel         = channel + self.fields_map['VAL']
@@ -579,7 +576,17 @@ class QMotor(QWidget):
         """
         if self._channel != value:
             self._channel = str(value)
+            # Set new channel prefix on the main widget
             self.set_all_channels(self._channel)
+            # If QMotorSettings is open, reload it for the new channel prefix
+            # at nearly the same position
+            if self.settings_window != None:
+                x = self.settings_window.pos().x()
+                y = self.settings_window.pos().y()
+                self.settings_window.close()
+                self.settings_window = None
+                self.load_settings_ui()
+                self.settings_window.move(x, y)
 
     @Property(Qt.Orientation)
     def orientation(self):
@@ -655,6 +662,88 @@ class QMotor(QWidget):
             self._inverted_scale = inverted
             self.build_layout(self._orientation, self._flipped, inverted)
 
+    @Property(bool)
+    def alarmSensitiveContents(self):
+        """
+        Whether or not the content color changes when alarm severity
+        changes.
+        Returns
+        -------
+        bool
+            True means that the content color will be changed in case of
+            alarm severity changes.
+        """
+        return self._alarm_sensitive_contents
+
+    @alarmSensitiveContents.setter
+    def alarmSensitiveContents(self, checked):
+        """
+        Whether or not the content color changes when alarm severity
+        changes.
+        Parameters
+        ----------
+        checked : bool
+            True means that the content color will be changed in case of
+            alarm severity changes.
+        """
+        self._alarm_sensitive_contents = checked
+
+        widgets = self.findChildren(QWidget)
+        for child_widget in widgets:
+            try:
+                child_widget._alarm_sensitive_content = checked
+            except:
+                pass
+
+        if self.settings_window == None:
+            return
+        widgets = self.settings_window .findChildren(QWidget)
+        for child_widget in widgets:
+            try:
+                child_widget._alarm_sensitive_content = checked
+            except:
+                pass
+
+    @Property(bool)
+    def alarmSensitiveBorders(self):
+        """
+        Whether or not the border color changes when alarm severity changes.
+        Returns
+        -------
+        bool
+            True means that the border color will be changed in case of
+            alarm severity changes.
+        """
+        return self._alarm_sensitive_borders
+
+    @alarmSensitiveBorders.setter
+    def alarmSensitiveBorders(self, checked):
+        """
+        Whether or not the border color changes when alarm severity
+        changes.
+        Parameters
+        ----------
+        checked : bool
+            True means that the border color will be changed in case of
+            alarm severity changes.
+        """
+        self._alarm_sensitive_borders = checked
+
+        widgets = self.findChildren(QWidget)
+        for child_widget in widgets:
+            try:
+                child_widget._alarm_sensitive_border = checked
+            except:
+                pass
+
+        if self.settings_window == None:
+            return
+        widgets = self.settings_window .findChildren(QWidget)
+        for child_widget in widgets:
+            try:
+                child_widget._alarm_sensitive_border = checked
+            except:
+                pass
 
 if __name__ == '__main__':
     app = PyDMApplication(use_main_window=False)

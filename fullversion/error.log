@@ -1,10 +1,12 @@
 --------------------------------------------------------------------------------
-2019-04-26, 15:46:00
+2019-05-07, 10:42:29
 --------------------------------------------------------------------------------
-<class 'AttributeError'>: 
-'IntegrationImgWidget' object has no attribute 'img_histogram_LUT'
+<class 'TypeError'>: 
+'int' object is not callable
 --------------------------------------------------------------------------------
-  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/vision_system/MainController_dioptas.py", line 296, in tab_changed
-    old_hist_levels = self.widget.integration_widget.img_widget.img_histogram_LUT.getExpLevels()
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/EMA.py", line 103, in dioptasFinishedTask
+    self.singleCrystal_MotorEventControl()
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/EMA.py", line 77, in singleCrystal_MotorEventControl
+    if(self.ui_singlecrystal.ui.QMotor.PyDMSymbol_lvio.value() == 1):
 --------------------------------------------------------------------------------
 Dioptas Version: 0.5.0
