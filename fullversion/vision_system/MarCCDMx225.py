@@ -13,7 +13,9 @@ import os, sys
 from PyQt5.QtCore import pyqtSignal,QThread
 from builtins import str
 from future.backports.test.pystone import FALSE
-import imageio
+#import imageio
+import tifffile
+import numpy as np
 
 class MarCCDMx225(QThread):
     '''
@@ -99,19 +101,65 @@ class MarCCDMx225(QThread):
             if not (os.path.exists(file)):
                 return False
             else:
-                image = imageio.imread(file)
-                accumulate = accumulate + image
+                image = np.uint32(tifffile.imread(file))
+                accumulate = np.uint32(accumulate + image)
                 move(file, self.pathHomeUser + file)
         
         pathFileAcclt = self.pathHomeUser + filename
-        imageio.imwrite(uri = pathFileAcclt, im = accumulate)
+        tifffile.imwrite(file = pathFileAcclt, data = accumulate)
+        return os.path.exists(pathFileAcclt) 
+    
+    def _accumulate2(self,filename):
+        ''' This function is not safe -> some headers are not compatible with it '''
+        accumulate = 0
+        for k in range(0,self.numOfimages):
+            file = '_' + str(k) + '_' + filename
+            self.remote = self.pathMarCCD + file
+            self.captureImage(self.count_number*k+1)
+            self._ftp(file)
+            if not (os.path.exists(file)):
+                return False
+            else:
+                #image = np.uint32(tifffile.imread(file))
+                with tifffile.TiffFile(file) as image:  #This variable is a tifffile, not numpy 
+                    image_matrix = image.asarray() #Now, it is numpy 
+                    ''' Getting the header of tiff image '''
+                    tag = image.pages[0]
+                'Operating with image - numpy'
+                accumulate = np.uint32(accumulate + image_matrix)
+                move(file, self.pathHomeUser + file)
+        'Define an address to new image'
+        pathFileAcclt = self.pathHomeUser + filename
+        'Now, it is time to write the new image'
+        #tifffile.imwrite(file = pathFileAcclt, data = accumulate)
+        with tifffile.TiffWriter(file = pathFileAcclt) as newimage:
+            newimage.save(data=accumulate,
+            photometric=tag.tags['PhotometricInterpretation'].value,
+            planarconfig=None,
+            extrasamples=None,
+            tile=None,
+            contiguous=True,
+            align=16,
+            truncate=False, 
+            compress=0,
+            rowsperstrip=tag.tags['RowsPerStrip'].value, 
+            predictor=False, 
+            colormap=None,
+            description=None,
+            datetime=None,
+            resolution=(tag.tags['XResolution'].value[0]/tag.tags['XResolution'].value[1],tag.tags['XResolution'].value[0]/tag.tags['XResolution'].value[1]),
+            subfiletype=0,
+            software='tifffile.py', 
+            metadata={}, 
+            ijmetadata=None,
+            extratags=())
         return os.path.exists(pathFileAcclt) 
             
     
     def args (self, exposure = 10, count_number = 10, prefix = 'data.tiff',pathHomeUser = '', pix_size = 1024, cumulative = 1):
         self.pathHomeUser = pathHomeUser #'/home/ABTLUS/rodrigo.guercio/Documents/MarCCD - Computer files/'
         self.pathMarCCD = '/home/marccd/XDS/2018/ftp_files/'
-        self.pathMarCCD = '/home/marccd/XDS_teste/ftp-pack/images_from_marccd/'
+        #self.pathMarCCD = '/home/marccd/XDS_teste/ftp-pack/images_from_marccd/'
         self.pix_size = pix_size
         self.exposure = exposure
         self.count_number = count_number

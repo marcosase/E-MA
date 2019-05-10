@@ -44,6 +44,7 @@ class SensorOcean(QThread):
             self.createOcean()
         except RuntimeError:
             self.ocean = None
+            print('Ocean Spectrometer not found')
 
     def createOcean(self):
         self.numPoints = 2048

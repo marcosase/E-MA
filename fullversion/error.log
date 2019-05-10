@@ -1,12 +1,10 @@
 --------------------------------------------------------------------------------
-2019-05-07, 10:42:29
+2019-05-10, 16:32:34
 --------------------------------------------------------------------------------
-<class 'TypeError'>: 
-'int' object is not callable
+<class 'AttributeError'>: 
+'NoneType' object has no attribute 'pvStart'
 --------------------------------------------------------------------------------
-  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/EMA.py", line 103, in dioptasFinishedTask
-    self.singleCrystal_MotorEventControl()
-  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/EMA.py", line 77, in singleCrystal_MotorEventControl
-    if(self.ui_singlecrystal.ui.QMotor.PyDMSymbol_lvio.value() == 1):
+  File "/home/ABTLUS/rodrigo.guercio/workspace/E-MA/E-MA/fullversion/pressure_system/PressureSystem.py", line 230, in managerUserInterfaceforacquisition_stop
+    btn_int = self.SensorOcean.ocean.pvStart.get() #We changed btn_st per btn_int
 --------------------------------------------------------------------------------
 Dioptas Version: 0.5.0

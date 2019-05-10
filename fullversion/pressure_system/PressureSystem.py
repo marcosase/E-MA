@@ -229,10 +229,10 @@ class PressureSystem(object):
             #See the starting status
             btn_int = self.SensorOcean.ocean.pvStart.get() #We changed btn_st per btn_int
             cmd_str = self.SensorOcean.ocean.pvAcMode.get() #Which mode is ?
+            self.setEnabled_widgets(True)
             if (btn_int == 1) and (cmd_str == 1):#Acquiring is happening
                 self.SensorOcean.ocean.pvStart.put(0) # I know, it makes no sense
                 self.checkPlot()
-                self.setEnabled_widgets(True)
             else:
                 self.showDialog("System is stopped", "System is stopped")   
             
@@ -241,8 +241,8 @@ class PressureSystem(object):
     
     def setEnabled_widgets(self, bool):
         self.ui.edtIntegration.setEnabled(bool)
-        self.ui.cmbAcquisition.setEnabled(bool)
         self.ui.doubleSpinBox_lblTemp.setEnabled(bool)
+        self.ui.cmbAcquisition.setEnabled(bool)
         
     def checkPlot(self):
         if (not(self.ui.chkAuto.isChecked())): # But, it does not want to search peak automatically

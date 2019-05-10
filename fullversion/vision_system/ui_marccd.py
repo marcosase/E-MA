@@ -36,13 +36,14 @@ class ui_marccd(object):
         self.ui.PyDMPushButton_imagesequence.clicked.connect(self._imagesequence)
         self.ui.spinBox_filename.valueChanged.connect(self.update_filename)
         self.ui.PyDMPushButtonSelect.clicked.connect(self.getpath)
+        self.ui.PyDMPushButton_abort.clicked.connect(self.abortCapture)
         
         self.marccd.signal.connect(self.display_status)
         self.marccd.terminated.connect(self.imagenumbercapture)
         self.timeleft = DisplayTime()
         self.timeleft.timeleft.connect(self.displaytimeleft)
         
-        self.ui.PyDMPushButton_abort.clicked.connect(self.abortCapture)
+        
         
     def getpath(self):
         self.ui.lineEdit_path.setText(QtWidgets.QFileDialog.getExistingDirectory(self.ui.PyDMPushButtonSelect))
@@ -276,7 +277,7 @@ class ui_marccd(object):
             self.ui.PyDMLabel_msgerror.setText("Directory does not exist. Make one! ")
             self.ui.PyDMLabel_msgerror.setStyleSheet("color: rgb(240, 240, 0);")
         elif command == 8: 
-            self.ui.PyDMLabel_msgerror.setText("Restart marccd server :/")
+            self.ui.PyDMLabel_msgerror.setText("Try to connect again or restart marccd server :/")
             self.ui.PyDMLabel_msgerror.setStyleSheet("color: rgb(240, 240, 0);")
         elif command == 9:       
             self.ui.PyDMLabel_msgerror.setText("Waiting image from device ...")

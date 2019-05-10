@@ -71,7 +71,7 @@ def indexes(input_array,axis_x, thres = 0.01, error_fit = 0.5, deltaMin_nm = 1.0
                     center_left = np.round_(a = center_left, decimals = 2) #nm
                     center_right = np.round_(a = center_right, decimals = 2) #nm
                     
-                    'Rightmost peak is bigger than leftmost peak (nm) and their relative distance is smaller than 5 nm, for example'
+                    'Rightmost peak is bigger than leftmost peak (nm) (obsolete) and their relative distance is smaller than 5 nm, for example'
                     if ((center_right > center_left) and (center_right - center_left) < 5*deltaMin_nm): #(wl[0] > wl[1]) and (wl[0] - wl[1] < 120.5): #rightmost peak should greater than leftmost
                         temp = temperatureCalculate(I1, I2)
                         print('Int. peaks:', I1,I2,temp)
