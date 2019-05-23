@@ -6,6 +6,7 @@ Created on May 10, 2019
 import tifffile
 import numpy as np
 import exifread
+from typing import ByteString
 
 def printtags(filename1):
     f = open(filename1, 'rb')
@@ -55,12 +56,12 @@ def writeimage(addr, matrix, tags, specialTag):
                       colormap=None,
                       description=None,
                       datetime=None,
-                      resolution=(tags.tags['XResolution'].value[0]/tags.tags['XResolution'].value[1],tags.tags['YResolution'].value[0]/tags.tags['YResolution'].value[1]),
+                      resolution=(tags.tags['XResolution'].value[0]/tags.tags['XResolution'].value[1],tags.tags['YResolution'].value[0]/tags.tags['YResolution'].value[1],'CENTIMETER'),
                       subfiletype=0,
                       software='tifffile.py', 
                       metadata={}, 
                       ijmetadata=None,
-                      extratags=specialTag )
+                      extratags=[(273, 'I', 1, 1, False)] )
     print('Ok')
     
     

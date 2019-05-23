@@ -186,10 +186,10 @@ class EmaApp (object):
         ''' PV names edition '''
         self.pvname_ocean = self.ui_pvnames.lineEdit_spec.text()
         self.pvname_motorGearBox = self.ui_pvnames.lineEdit_motor.text()
-        self.pvname_motorGearBox = 'DMC01:A'
-        #self.pvname_motorGearBox = 'dmc:galil:test:A'
         self.pvname_lakeshore = self.ui_pvnames.lineEdit_LS.text()
         self.pvname_motorSingleCrystal = 'dmc:galil:test:A'
+        #self.pvname_motorGearBox = 'DMC01:A'
+        #self.pvname_motorGearBox = 'dmc:galil:test:A'
     
     def acceptedChanges_pvname(self):
         ''' PV names edition '''

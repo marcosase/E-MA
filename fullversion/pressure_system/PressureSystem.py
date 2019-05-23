@@ -739,9 +739,7 @@ class PressureSystem(object):
     
     def micronsEstimationAndGo(self,gpa__desired, gpa__real):
         if (gpa__real >= 0 and gpa__desired > gpa__real):
-            microns = (gpa__desired - gpa__real)*self.eff #Delta GPA * REV/GPA
-            print('microns')
-            print(microns)
+            microns = (gpa__desired - gpa__real)*self.eff #Delta GPA * microns/GPA
             return microns
         else:
             self.ui.msg_error.setText('Real pressure is negative :(')
