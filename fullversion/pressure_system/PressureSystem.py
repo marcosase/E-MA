@@ -753,6 +753,7 @@ class PressureSystem(object):
                     if self.checkNiceRange(self.gpa_desired, gpa_real): #gpa_real == self.gpa_desired: #Is it the desired value ?
                         self.pauseMotor_automatic() #System Pause
                         self.colourGreenCircle() #Finished motion! Every thing is ok!
+                        self.pauseUser = True #Unexpected situation -> pressure is dropping. 
                     elif not(self.machine.isRunning()): #It is the stopped but it is not the desired value! 
                         self.micros_desired = self.micronsEstimationAndGo(self.gpa_desired, gpa_real) #New estimation 
                         self.startMotor() #Go

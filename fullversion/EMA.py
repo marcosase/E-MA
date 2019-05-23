@@ -187,7 +187,8 @@ class EmaApp (object):
         self.pvname_ocean = self.ui_pvnames.lineEdit_spec.text()
         self.pvname_motorGearBox = self.ui_pvnames.lineEdit_motor.text()
         self.pvname_lakeshore = self.ui_pvnames.lineEdit_LS.text()
-        self.pvname_motorSingleCrystal = 'dmc:galil:test:A'
+        self.pvname_motorSingleCrystal = self.ui_pvnames.lineEdit_sg.text()
+        #self.pvname_motorSingleCrystal = 'dmc:galil:test:A'
         #self.pvname_motorGearBox = 'DMC01:A'
         #self.pvname_motorGearBox = 'dmc:galil:test:A'
     
@@ -196,7 +197,8 @@ class EmaApp (object):
         try:
             self.getting_pvname()
             self.showDialog(title = 'Please Wait', text = 'Please Wait While E-MA Configures E-MA Application')
-            self.ui_ocean.setFlowControl(oceanPV = self.pvname_ocean, motorPV = self.pvname_motorGearBox, LS = self.pvname_lakeshore)
+            self.setOceanApp()
+            self.setSingleCrystalApp()
         except OSError as err:
             self.showDialog(title = 'Error on PV names edition', text = err)
         

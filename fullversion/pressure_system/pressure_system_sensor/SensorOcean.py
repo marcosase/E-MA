@@ -92,7 +92,7 @@ class SensorOcean(QThread):
                 xdata = self.getXdata()
                 ''' Selecting peaks and getting the respective wavelength '''
                 wavelength = indexes(ydata,xdata)
-                #wavelength = np.array([695,694])
+                #wavelength = np.array([695,694,300])
                 #print('wavelength',wavelength)
                 ''' Filtering situations to emit signal'''    
                 if wavelength is not None:
